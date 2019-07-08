@@ -1,5 +1,5 @@
 numpy==1.16.*
-pandas==0.25.*
+pandas==0.24.*
 matplotlib==3.*
 twython
 geopy
