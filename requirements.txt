@@ -3,3 +3,4 @@ pandas==0.24.*
 matplotlib==3.*
 twython
 geopy
+opencv-python
