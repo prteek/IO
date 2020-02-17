@@ -6,3 +6,5 @@
 [3. Twitter Data Analysis](https://nbviewer.jupyter.org/github/prteek/IO/blob/master/twitterDataAnalysis.ipynb)  
 [4. World Bank Data Analysis](https://nbviewer.jupyter.org/github/prteek/IO/blob/master/WorldBankDataPlots.ipynb)  
 [5. Document Scanner](https://nbviewer.jupyter.org/github/prteek/IO/blob/master/scanner.ipynb)  
+[6. Bayesian reasoning](https://nbviewer.jupyter.org/github/prteek/IO/blob/master/bayesian_reasoning.ipynb)  
+[7. Battery modelling](https://nbviewer.jupyter.org/github/prteek/IO/blob/master/battery_model_parameter_estimation.ipynb)  
