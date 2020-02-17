@@ -9,4 +9,4 @@
 [6. Bayesian reasoning](https://nbviewer.jupyter.org/github/prteek/IO/blob/master/bayesian_reasoning.ipynb)  
 [7. Battery modelling](https://nbviewer.jupyter.org/github/prteek/IO/blob/master/battery_model_parameter_estimation.ipynb)  
 [8. iOS shortcut query twitter](https://www.icloud.com/shortcuts/1ff69749a4b34a93b2872d2d6014755f)  
-[9. iOS shortcut Photo OCR](https://www.icloud.com/shortcuts/1ff69749a4b34a93b2872d2d6014755f)  
+[9. iOS shortcut Photo OCR](https://www.icloud.com/shortcuts/8671db5505c940b68fcf61fb7eff5757)  
