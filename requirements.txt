@@ -1,3 +1,4 @@
+pixiedust
 nbdime
 numpy
 pandas
