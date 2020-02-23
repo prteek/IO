@@ -1,13 +1,22 @@
-pixiedust
+## Working environment
+jupyter
 nbdime
+pixiedust
+joblib
+pydotplus
+dill
+
+## core scientific
 numpy
 pandas
 matplotlib
+
+## ML
+scikit-learn
+
+## twitter
 twython
 geopy
+
+## vision
 opencv-python
-joblib
-pydotplus
-scikit-learn
-jupyter
-dill
