@@ -1,4 +1,5 @@
 ## Working environment
+pip
 jupyter
 nbdime
 pixiedust
