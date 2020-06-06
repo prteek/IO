@@ -1,6 +1,6 @@
 ## Working environment
 pip
-jupyter
+jupyterlab
 nbdime
 pixiedust
 joblib
@@ -17,6 +17,7 @@ statsmodels
 ## Visualisation
 seaborn
 matplotlib
+plotly
 
 ## ML
 scikit-learn
