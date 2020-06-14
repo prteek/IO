@@ -11,7 +11,7 @@ dill
 numpy
 pandas
 scipy
-dask
+dask[complete]
 statsmodels
 
 ## Visualisation
