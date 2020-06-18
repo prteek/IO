@@ -6,6 +6,7 @@ pixiedust
 joblib
 pydotplus
 dill
+pyflakes
 
 ## core scientific
 numpy
