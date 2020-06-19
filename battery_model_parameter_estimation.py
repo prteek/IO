@@ -1,0 +1,217 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[1]:
+
+
+import os
+
+os.system("pip install -U -r requirements.txt")
+
+import numpy as np
+from scipy.optimize import curve_fit
+from matplotlib import pyplot as plt
+from sklearn.tree import DecisionTreeRegressor
+import pandas as pd
+from sklearn.tree import export_graphviz
+import pydotplus
+
+
+# In[2]:
+
+
+def model(X, r0, r1, c1, r2, c2):
+    """Dual polarisation model of battery"""
+    t = X[:, 0]
+    i = X[:, 1]
+
+    voltage = (
+        ocv
+        - i * r0
+        - i * r1 * (1 - np.exp(-t / (r1 * c1)))
+        - i * r2 * (1 - np.exp(-t / (r2 * c2)))
+    )
+    return voltage
+
+
+def model2(X, r0, r1, c1):
+    """R-RC model of battery"""
+    t = X[:, 0]
+    i = X[:, 1]
+    voltage = ocv - i * r0 - i * r1 * (1 - np.exp(-t / (r1 * c1)))
+    return voltage
+
+
+# Create some dummy data to test models
+
+time = np.arange(200)
+I = 150 * np.ones((200, 1)) + np.random.random((200,)) * 10
+
+X_in = np.c_[time, I]
+
+# Arbitrary parameters to generate dummy data
+R0 = 5e-3
+R1 = 5e-4
+C1 = 5e4
+R2 = 5e-5
+C2 = 5e4
+
+ocv = 4.2
+voltage = model(X_in, R0, R1, C1, R2, C2) + np.random.random((200,)) * 0.01 / 2
+
+fig = plt.figure()
+plt.plot(time, voltage, ".")
+plt.title("Dummy data")
+plt.grid()
+plt.xlabel("time [s]")
+plt.ylabel("cell voltage [V]")
+plt.show()
+
+
+# In[3]:
+
+
+# Fitting Dual polarisation model to dummy data
+ini = np.array([R0, R1, C1, R2, C2]) * 0.5
+
+popt, pcov = curve_fit(model, X_in, voltage, p0=ini, bounds=(0, np.Inf))
+
+fig = plt.figure()
+plt.plot(time, voltage, ".", label="data")
+plt.plot(time, model(X_in, *popt), ".", label="DP model fit to data")
+plt.grid()
+plt.legend()
+plt.xlabel("time [s]")
+plt.ylabel("cell voltage [V]")
+plt.show()
+
+df = pd.DataFrame(
+    np.c_[[R0, R1, C1, R2, C2], popt],
+    ["R0", "R1", "C1", "R2", "C2"],
+    columns=["Actual value", "Fitted value"],
+)
+
+df
+
+
+# In[4]:
+
+
+# fitting R-RC model to dummy data
+
+ini = np.array([R0, R1, C1]) * 2
+
+popt, pcov = curve_fit(model2, X_in, voltage, p0=ini, bounds=(0, np.Inf))
+
+plt.figure()
+plt.plot(time, voltage, ".", label="data")
+plt.plot(time, model2(X_in, *popt), ".", label="R-RC model fit to data")
+plt.grid()
+plt.legend()
+plt.xlabel("time [s]")
+plt.ylabel("cell voltage [V]")
+plt.show()
+
+df = pd.DataFrame(
+    np.c_[[R0, R1, C1], popt],
+    ["R0", "R1", "C1"],
+    columns=["Actual value", "Fitted value"],
+)
+
+df
+
+
+# In[5]:
+
+
+# Working with real data
+
+df = pd.read_csv("docs/data.txt", delimiter="\t")
+df.columns = ["time", "current", "voltage"]
+
+time = df["time"] - df["time"][0]
+current = -df["current"]
+voltage = df["voltage"]
+
+ocv = 3.75
+
+X_data = np.c_[time, current]
+
+# Ballpark estimates
+ini = np.array([0.0005, 0.0001, 10000, 0.0001, 100000])
+
+popt, pcov = curve_fit(model, X_data, voltage, p0=ini, bounds=(0, np.Inf))
+
+print(
+    pd.DataFrame(
+        np.c_[popt.T, np.diag(pcov).T],
+        ["R0", "R1", "C1", "R2", "C2"],
+        columns=["Fitted parameters", "Variance of fit"],
+    )
+)
+
+plt.figure()
+plt.plot(time, voltage, ".", label="logged voltage")
+plt.plot(time, model(X_data, *popt), ":", label="modelled voltage")
+plt.grid()
+plt.legend()
+plt.show()
+
+error = voltage - model(X_data, *popt)
+print("\n RMSE:", np.sqrt(np.mean(error ** 2)))
+
+
+# In[6]:
+
+
+# Demonstration of failure of machine learning
+# Fit the model to logged data
+
+X_train = X_data
+
+X = np.array(X_train)
+y = np.array(voltage)
+
+tree = DecisionTreeRegressor()
+
+tree.fit(X, y)
+
+
+# In[7]:
+
+
+# Run the model on a synthetic data which has a very long current pulse
+
+time = np.arange(200)
+I = 150 * np.ones((200, 1)) + np.random.random((200, 1)) * 10
+
+X_test = np.c_[time, I]
+
+v_predict = tree.predict(X_test)
+v_predict_rf = tree.predict(X_test)
+
+plt.figure()
+plt.plot(X_train[:, 0], voltage, ".", label="training data")
+plt.plot(X_test[:, 0], v_predict, ".", label="test data")
+plt.xlabel("time [sec]")
+plt.ylabel("cell voltage [V]")
+plt.grid()
+plt.legend()
+plt.show()
+
+
+# In[8]:
+
+
+dot_data = export_graphviz(
+    tree,
+    out_file=None,
+    feature_names=["time", "current"],
+    class_names=["voltage"],
+    rounded=True,
+    filled=True,
+)
+
+graph = pydotplus.graph_from_dot_data(dot_data)
+
+#graph.write_png("docs/visualise_decision_tree.png")
