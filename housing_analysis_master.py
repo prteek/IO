@@ -1,8 +1,6 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[6]:
-
+# author           : Prateek
+# email            : prateekpatel.in@gmail.com
+# description      : Prediction of guest room usage of houses based on suspected inputs
 
 import os
 

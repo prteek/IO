@@ -1,8 +1,6 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
+# author           : Prateek
+# email            : prateekpatel.in@gmail.com
+# description      : SIR model and spread prediction of early stage COVID19 for different countries and worldwide
 
 import os
 

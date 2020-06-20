@@ -1,8 +1,6 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[42]:
-
+# author           : Prateek
+# email            : prateekpatel.in@gmail.com
+# description      : Demonstrates bayesian reasoning
 
 import os
 
@@ -13,8 +11,6 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import SGDClassifier
 from scipy.stats import norm
 
-
-# In[43]:
 
 
 np.random.seed(2)
@@ -28,14 +24,11 @@ x = np.concatenate((x0, x1), axis=0)
 y = np.concatenate((y0, y1), axis=0)
 
 
-# In[44]:
 
 
 sgd_clf = SGDClassifier()
 sgd_clf.fit(x, y.ravel())
 
-
-# In[45]:
 
 
 x_new = np.arange(-5, 5, 0.01)
@@ -46,7 +39,6 @@ plt.scatter(x_new, y_predict), plt.title("Class definition for range of x's")
 plt.grid(), plt.show()
 
 
-# In[48]:
 
 
 mu0, std0 = norm.fit(x0)
@@ -58,7 +50,6 @@ likelihood_of_class1 = norm.pdf(x_new_instance, mu1, std1)
 print(likelihood_of_class0, likelihood_of_class1)
 
 
-# In[53]:
 
 
 tot = 10000 + 100

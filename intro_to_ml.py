@@ -1,6 +1,7 @@
-#!/usr/bin/env python
-# coding: utf-8
-
+# author           : Prateek
+# email            : prateekpatel.in@gmail.com
+# description      : Hands on exercise in Introductory machine learning
+#
 # # Machine learning
 #
 # ## Types
@@ -17,8 +18,6 @@
 # #### Online (sequential) learning
 # #### Semi supervised learning
 # #### Self supervised learning (turing learning)
-
-# In[314]:
 
 
 import os

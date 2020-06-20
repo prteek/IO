@@ -1,10 +1,6 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# # Dash coin
-
-# In[1]:
-
+# author           : Prateek
+# email            : prateekpatel.in@gmail.com
+# description      : Earning projections of investment into Dash coin mining
 
 import os
 

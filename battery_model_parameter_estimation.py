@@ -1,8 +1,6 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
+# author           : Prateek
+# email            : prateekpatel.in@gmail.com
+# description      : Demonstrates parameter estimation for physical models of Lithiom Ion battery from test data using non-linear regression, and good and bad side of using Decision tree for the same
 
 import os
 
@@ -214,4 +212,4 @@ dot_data = export_graphviz(
 
 graph = pydotplus.graph_from_dot_data(dot_data)
 
-#graph.write_png("docs/visualise_decision_tree.png")
+# graph.write_png("docs/visualise_decision_tree.png")

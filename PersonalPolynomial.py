@@ -1,9 +1,10 @@
-#!/usr/bin/env python
-# coding: utf-8
+# author           : Prateek
+# email            : prateekpatel.in@gmail.com
+# description      : Just for fun determination of a polynomial based on input name
 
-# # Personal polynomial
+import os
 
-# In[2]:
+os.system("pip install -U -r requirements.txt")
 
 
 name = "Prateek"

@@ -1,7 +1,6 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# # Drive cycle characterisation for real world fuel economy prediction
+# author           : Prateek
+# email            : prateekpatel.in@gmail.com
+# description      : Drive cycle characterisation for real world fuel economy prediction
 #
 # Link to the paper: https://www.sae.org/publications/technical-papers/content/2018-01-0644/
 #

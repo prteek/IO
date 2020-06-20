@@ -1,6 +1,9 @@
-# # Twitter data Analysis
+# author           : Prateek
+# email            : prateekpatel.in@gmail.com
+# description      : Fetch what is trending in your location/any location on twitter
 
 import os
+
 os.system("pip install -U -r requirements.txt")
 
 from twython import Twython

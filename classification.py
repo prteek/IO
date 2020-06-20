@@ -1,7 +1,10 @@
-#!/usr/bin/env python
-# coding: utf-8
+# author           : Prateek
+# email            : prateekpatel.in@gmail.com
+# description      : Exercise in classification models
 
-# In[ ]:
+import os
+
+os.system("pip install -U -r requirements.txt")
 
 
 import numpy as np
@@ -17,7 +20,6 @@ from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_
 from sklearn.metrics import precision_recall_curve
 from sklearn.model_selection import train_test_split
 
-# In[4]:
 
 
 from sklearn.datasets import load_digits
@@ -27,22 +29,14 @@ mnist = load_digits()
 mnist.keys()
 
 
-# In[5]:
-
 
 mnist["DESCR"]
-
-
-# In[6]:
 
 
 X, y = mnist["data"], mnist["target"]
 y = y.astype(int)
 
 X.shape, y.shape
-
-
-# In[7]:
 
 
 # get_ipython().run_line_magic('matplotlib', 'inline')
@@ -58,8 +52,6 @@ plt.show()
 print(y[index])
 
 
-# In[ ]:
-
 
 # Create a test set and set it aside before further exploration
 
@@ -74,7 +66,6 @@ np.random.seed(42)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
 
-# In[9]:
 
 
 from sklearn.linear_model import SGDClassifier
@@ -88,8 +79,6 @@ sgd_clf.fit(X_train, y_train_5)
 
 sgd_clf.predict([some_digit])
 
-
-# In[10]:
 
 
 # Custom made cross_val_score
@@ -113,15 +102,9 @@ for train_index, test_index in skfolds.split(X_train, y_train_5):
     print(n_correct / len(y_pred))
 
 
-# In[11]:
-
-
 from sklearn.model_selection import cross_val_score
 
 cross_val_score(sgd_clf, X_train, y_train_5, cv=3, scoring="accuracy")
-
-
-# In[12]:
 
 
 # This accuracy looks too good. Let's create a classifier that classifies every input as not 5
@@ -146,8 +129,6 @@ print(sum(y_train_5) / len(y_train_5), "Only a small proportion of training data
 print("Accuracy is not the preferred performance measure for skewed datasets")
 
 
-# In[13]:
-
 
 # Confusion Matrix
 
@@ -164,8 +145,6 @@ cm = confusion_matrix(y_train_5, y_train_pred)
 # Each row is an actual class (negative, positive), each column is a predicted class (negative, positive)
 print(cm)
 
-
-# In[14]:
 
 
 print(
@@ -186,9 +165,6 @@ print(
 # therefore, both precision and recall must be high to get good F1 score
 
 
-# In[15]:
-
-
 from sklearn.metrics import precision_score, recall_score, f1_score
 
 print("Precision score", precision_score(y_train_5, y_train_pred))
@@ -196,9 +172,6 @@ print("Recall score", recall_score(y_train_5, y_train_pred))
 print("F1 score", f1_score(y_train_5, y_train_pred))
 
 # Precision and recall are complementary i.e. increasing one decreases the other
-
-
-# In[16]:
 
 
 # Check the score used to make prediction, threshold for making decision is unavailable
@@ -218,8 +191,6 @@ print(y_some_digit_predict)
 # Increasing the threshold will decrease Recall
 
 
-# In[17]:
-
 
 # To decide on a value threshold to optimise precision vs recall, first get all the prediction scores
 y_scores = cross_val_predict(
@@ -230,7 +201,6 @@ y_scores = cross_val_predict(
 print(y_scores[:5])
 
 
-# In[18]:
 
 
 # Now precision and recall can be computed for all possible thresholds
@@ -268,8 +238,6 @@ print(
 )
 
 
-# In[19]:
-
 
 y_train_pred_90 = y_scores > 200000
 # Let's say we want 90% precision then threshold is correspondingly chosen
@@ -277,8 +245,6 @@ y_train_pred_90 = y_scores > 200000
 print("Precision: ", precision_score(y_train_5, y_train_pred_90))
 print("Recall: ", recall_score(y_train_5, y_train_pred_90))
 
-
-# In[20]:
 
 
 # The ROC curve
@@ -303,8 +269,6 @@ plot_roc_curve(fpr, tpr)
 print("Area under curve (AUC)", roc_auc_score(y_train_5, y_scores))
 print("Ideal AUC=1, Random classifier AUC = 0.5")
 
-
-# In[21]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -332,8 +296,6 @@ plt.show()
 print("Area under curve (AUC)", roc_auc_score(y_train_5, y_scores_forest))
 
 
-# In[22]:
-
 
 # Multi Class classification
 
@@ -344,16 +306,12 @@ sgd_clf.fit(X_train, y_train)  # Using all classes in training
 sgd_clf.predict([some_digit])
 
 
-# In[23]:
-
 
 some_digit_scores = sgd_clf.decision_function([some_digit])
 print(some_digit_scores, "\n\n maximum score for class:5")
 
 sgd_clf.classes_
 
-
-# In[24]:
 
 
 from sklearn.multiclass import OneVsOneClassifier, OneVsRestClassifier
@@ -365,8 +323,6 @@ print(ovo_clf.predict([some_digit]))
 len(ovo_clf.estimators_)  # 10Choose2 One vs One classifiers for 10 classes = 45
 
 
-# In[25]:
-
 
 # Random forest classifier has multiclass capability
 
@@ -374,8 +330,6 @@ forest_clf.fit(X_train, y_train)
 print(forest_clf.predict([some_digit]))
 print(forest_clf.predict_proba([some_digit]))
 
-
-# In[26]:
 
 
 print(
@@ -397,8 +351,6 @@ print(
 )
 
 
-# In[27]:
-
 
 # Error Analysis
 
@@ -410,8 +362,6 @@ print(conf_mx)
 plt.matshow(conf_mx, cmap=plt.cm.gray)
 plt.show()
 
-
-# In[37]:
 
 
 row_sums = conf_mx.sum(
@@ -432,8 +382,6 @@ plt.show()
 # Row for 2 is bright so 2 is confused for other digits in prediction
 
 
-# In[ ]:
-
 
 # EXTRA
 def plot_digits(instances, images_per_row=10, **options):
@@ -450,9 +398,6 @@ def plot_digits(instances, images_per_row=10, **options):
     image = np.concatenate(row_images, axis=0)
     plt.imshow(image, cmap=plt.cm.binary, **options)
     plt.axis("off")
-
-
-# In[45]:
 
 
 # Let us observe the confusion between 3 and 5
@@ -477,7 +422,6 @@ plot_digits(X_bb[:10], images_per_row=5)
 plt.show()
 
 
-# In[49]:
 
 
 # Multilabel classification
@@ -494,5 +438,3 @@ knn_clf.fit(X_train, y_multilabel)
 
 knn_clf.predict([some_digit])
 
-
-# In[ ]:

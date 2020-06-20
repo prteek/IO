@@ -1,14 +1,11 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# # Document Scanner
-
-# In[1]:
-
+# author           : Prateek
+# email            : prateekpatel.in@gmail.com
+# description      : Document Scanner app
 
 import os
 
 os.system("pip install -U -r requirements.txt")
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np

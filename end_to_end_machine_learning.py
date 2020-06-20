@@ -1,12 +1,11 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# ### Download the data
-
-# In[1]:
-
+# author           : Prateek
+# email            : prateekpatel.in@gmail.com
+# description      : Exercise in end-to-end machine learning project
 
 import os
+
+os.system("pip install -U -r requirements.txt")
+
 import tarfile
 import urllib
 from datetime import datetime as DT

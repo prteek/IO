@@ -1,34 +1,10 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# <a href="https://colab.research.google.com/github/prteek/IO/blob/master/WorldBankDataPlots.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
-
-# # World Bank data analysis of India and GBR
-
-# In[ ]:
-
-
-# This cell is not required to be executed (i.e. ignore any error) if Notebook is run locally or in Binder
-# Authorise and mount google drive to access code and data files
-
-project_folder = "/content/drive/My Drive/git_repos/IO/"
+# author           : Prateek
+# email            : prateekpatel.in@gmail.com
+# description      : Comparison of metrics for GB and Ind based on data from world bank website
 
 import os
 
-if os.path.isdir("/content"):
-    from google.colab import drive
-
-    drive.mount("/content/drive")
-
-    if not (os.path.isdir(project_folder)):
-        os.makedirs(project_folder)
-        print("new project folder created")
-
-    os.chdir(project_folder)
-
-
-# In[ ]:
-
+os.system("pip install -U -r requirements.txt")
 
 import pandas as pd
 import numpy as np
