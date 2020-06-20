@@ -71,7 +71,7 @@ print(y[index])
 
 #  To accomodate data in memory
 np.random.seed(42)
-X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.3)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
 
 # In[9]:
@@ -223,7 +223,8 @@ print(y_some_digit_predict)
 
 # To decide on a value threshold to optimise precision vs recall, first get all the prediction scores
 y_scores = cross_val_predict(
-    sgd_clf, X_train, y_train_5, cv=3, method="decision_function")
+    sgd_clf, X_train, y_train_5, cv=3, method="decision_function"
+)
 # Using 'decision_function' gives the value of score rather than class itself
 
 print(y_scores[:5])
@@ -449,7 +450,6 @@ def plot_digits(instances, images_per_row=10, **options):
     image = np.concatenate(row_images, axis=0)
     plt.imshow(image, cmap=plt.cm.binary, **options)
     plt.axis("off")
-    
 
 
 # In[45]:
