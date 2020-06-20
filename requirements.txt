@@ -6,6 +6,7 @@ pixiedust
 joblib
 pydotplus
 dill
+black
 pyflakes
 
 ## core scientific
