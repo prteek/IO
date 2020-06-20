@@ -1,20 +1,11 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 # # Twitter data Analysis
 
-# In[1]:
-
-
 import os
-
 os.system("pip install -U -r requirements.txt")
+
 from twython import Twython
 from collections import Counter
 from geopy import Nominatim
-
-
-# In[ ]:
 
 
 # Note if running from binder the text file below will give an
@@ -45,8 +36,6 @@ CONSUMER_SECRET = line_text[1]
 #
 # Max. num of results restricted to 100 per search query so we loop over many times and make the same query.
 # But to avoid the results from repeating, we change the max_id of search results after each iteration
-
-# In[ ]:
 
 
 def find_tweets(
@@ -158,7 +147,6 @@ def find_tweets(
 
 # ### Search for tweets
 
-# In[ ]:
 
 
 search_string = input("Search String:")  # "" to search everything
@@ -183,8 +171,6 @@ tweets, hashtag_list, tweet_url_list, retweet_count_list, word_list, favorite_co
 
 
 # ### Post Processing
-
-# In[ ]:
 
 
 print(location, "\n")
