@@ -80,7 +80,7 @@ During the logging duration (%d months) trucks are chosen and each one of their 
 
 Ideally the more failures are captured during logging, the better.
 
-The logging duration thus becomes important in modelling accuracy and its effect can be seen later in AUC plot also.
+The logging duration thus becomes important in modelling accuracy and its effect can be seen later in AUC (area under the curve) plot also.
 
 """ % (logging_duration_weeks/4)
 
@@ -118,10 +118,10 @@ for n_trucks in size_options:
     kmf = KaplanMeierFitter()
     observed_event = trucks_age_weeks <= observed_duration_weeks
 
-    time = np.arange(logging_duration_weeks+1) 
+    time = np.arange(logging_duration_weeks+1)
     kmf.fit(trucks_age_weeks, observed_event, timeline=time)
     survival_prob = np.array(kmf.survival_function_.KM_estimate)
-    
+
     logging_index = np.where(time <= logging_duration_weeks)
 
     survival_prob_fleet_matching = prob_lookup(time[logging_index])
@@ -169,7 +169,7 @@ fleet_auc = np.trapz(survival_prob_fleet, time_fleet)
 * Best model that can be possible with %d months of logging
 * Reality i.e. if entire fleet were studied until all batteries failed
 
-AUC of a model can be considered an average life prediction (weeks) by that model.
+AUC (Area under the Survival Curve) of a model can be considered an average life prediction (weeks) by that model.
 
 The objective here is to understand that random influences can cause a good AUC (close to best model) but really a stable point is where the variations get less and predictions are more stable. 
 
@@ -205,7 +205,7 @@ plt.plot(
 )
 plt.plot([0, size_options[-1]], [fleet_auc, fleet_auc], ":g", label="reality")
 
-plt.title("AUC of survival curves")
+plt.title("AUC (area under curve) of survival curves")
 plt.xlabel(
     "number of trucks studied over " + str(logging_duration_weeks / 4) + " months"
 )
