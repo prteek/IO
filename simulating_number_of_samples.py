@@ -12,6 +12,7 @@ from sksurv.nonparametric import kaplan_meier_estimator
 from scipy.special import kl_div
 from scipy.stats import ranksums
 import time
+from scipy.interpolate import interp1d
 
 
 np.random.seed(10)  # For repeatability
@@ -29,16 +30,14 @@ fleet_age_distribution = (
     + battery_perfectly_healthy_until_week
 )
 
+
 plt.figure()
 plt.hist(
-    fleet_age_distribution,
-    bins=np.arange(0, 49, 4),
-    density="probability",
-    label="full fleet",
+    fleet_age_distribution, bins=np.arange(0, 49, 4), density=False, label="full fleet"
 )
 plt.title("Distribution of battery life for fleet")
 plt.xlabel("Battery life [weeks]")
-plt.ylabel("Proportion of fleet trucks")
+plt.ylabel("Number of fleet trucks")
 plt.grid()
 plt.show()
 
@@ -54,7 +53,16 @@ no_censored = (
 
 # Initialising plot and result variables
 auc = []
+norm_auc = []
+kldvg = []
 plt.figure()
+
+# Full fleet data model
+observed_event = fleet_age_distribution <= 9999
+time_fleet, survival_prob_fleet = kaplan_meier_estimator(
+    observed_event, fleet_age_distribution
+)
+prob_lookup = interp1d(time_fleet, survival_prob_fleet, kind="nearest")
 
 # np.random.seed(int(time.time()))
 
@@ -73,10 +81,18 @@ for n_trucks in size_options:
     time, survival_prob = kaplan_meier_estimator(observed_event, trucks_age_weeks)
 
     logging_index = np.where(time <= logging_duration_weeks)
-    auc.append(np.trapz(survival_prob[logging_index], time[logging_index]))
 
-    # Plot if number of trucks is a multiple of 10
-    if n_trucks % 10:
+    survival_prob_fleet_matching = prob_lookup(time[logging_index])
+
+    kldvg_i = kl_div(survival_prob_fleet_matching, survival_prob[logging_index])
+    norm_auc.append(
+        np.trapz(survival_prob[logging_index] * (1 - 10 * kldvg_i), time[logging_index])
+    )
+    auc.append(np.trapz(survival_prob[logging_index], time[logging_index]))
+    kldvg.append(np.nanmean(kldvg_i))
+
+    # Plot if number of trucks is is very low or very high (ROI)
+    if n_trucks > 20 and n_trucks < 90:
         continue
     plt.step(
         time,
@@ -85,11 +101,6 @@ for n_trucks in size_options:
         label=str(n_trucks) + " trucks : " + str(sum(observed_event)) + " failed",
     )
 
-
-observed_event = fleet_age_distribution <= 9999
-time_fleet, survival_prob_fleet = kaplan_meier_estimator(
-    observed_event, fleet_age_distribution
-)
 
 plt.step(time_fleet, survival_prob_fleet, where="post", label="reality")
 plt.plot(
@@ -106,10 +117,15 @@ plt.grid()
 plt.show()
 
 
+auc = np.array(auc)
+kldvg = np.array(kldvg)
 fleet_auc = np.trapz(survival_prob_fleet, time_fleet)
 
 plt.figure()
-plt.plot(size_options, auc, label="samples auc")
+plt.plot(size_options, auc, ":b", label="auc")
+plt.plot(size_options, auc * (1 - 10 * kldvg), "b", label="KL weighted auc")
+# plt.plot(size_options, kldvg*100, label="samples kldvg*100")
+
 plt.plot(
     [0, size_options[-1]],
     [auc[-1], auc[-1]],
@@ -124,7 +140,7 @@ plt.plot(
 plt.plot(
     [0, size_options[-1]], [auc[-1] + 1, auc[-1] + 1], ":k", label="+1 weeks best auc"
 )
-plt.plot([0, size_options[-1]], [fleet_auc, fleet_auc], ":b", label="reality")
+plt.plot([0, size_options[-1]], [fleet_auc, fleet_auc], ":g", label="reality")
 
 plt.title("AUC of survival curves")
 plt.xlabel(
