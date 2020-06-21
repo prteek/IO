@@ -39,6 +39,7 @@ plt.hist(
 plt.title("Distribution of battery life for fleet")
 plt.xlabel("Battery life [weeks]")
 plt.ylabel("Proportion of fleet trucks")
+plt.grid()
 plt.show()
 
 
