@@ -8,6 +8,7 @@ pydotplus
 dill
 black
 pyflakes
+pytest
 
 ## core scientific
 numpy
@@ -15,12 +16,13 @@ pandas
 scipy
 dask[complete]
 statsmodels
-scikit-survival
+lifelines
 
 ## Visualisation
 seaborn
 matplotlib
 plotly
+streamlit
 
 ## ML
 scikit-learn
