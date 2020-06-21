@@ -15,6 +15,7 @@ pandas
 scipy
 dask[complete]
 statsmodels
+scikit-survival
 
 ## Visualisation
 seaborn
