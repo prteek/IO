@@ -110,6 +110,7 @@ def sir_model_fitting(
         plt.ylabel("Population infected")
         plt.xlabel("Days since 22 Jan 2020")
         plt.grid()
+        plt.show()
 
         print(
             "Optimal parameters: beta =",
