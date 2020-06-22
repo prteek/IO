@@ -24,7 +24,7 @@ fleet_size = st.slider("Fleet size (# of trucks)", 50, 500, 100, step=50)  # ass
 
 
 """
-#### 1 month = 4 weeks 
+#### 1 month = 4 weeks
 """
 
 battery_perfectly_healthy_until_month = st.slider(
@@ -91,6 +91,7 @@ Ideally the more failures are captured during logging, the better.
 
 The logging duration thus becomes important in modelling accuracy and its effect can be seen later in AUC (area under the curve) plot also.
 
+###
 """ % (
     logging_duration_weeks / 4
 )
