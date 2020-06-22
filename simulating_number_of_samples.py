@@ -160,6 +160,7 @@ plt.show()
 st.pyplot()
 
 auc = np.array(auc)
+norm_auc = np.array(norm_auc)
 kldvg = np.array(kldvg)
 fleet_auc = np.trapz(survival_prob_fleet, time_fleet)
 
@@ -185,25 +186,25 @@ Also, notice that the logging duration brings *best model* closer to *reality*.
 
 
 plt.figure()
-plt.plot(size_options, auc, ":b", label="auc")
-plt.plot(size_options, auc * (1 - 10 * kldvg), "b", label="KL weighted auc")
+plt.plot(size_options, auc//1, ":b", label="auc")
+plt.plot(size_options, norm_auc//1, "b", label="KL weighted auc")
 # plt.plot(size_options, kldvg*100, label="samples kldvg*100")
 
 plt.plot(
     [0, size_options[-1]],
-    [auc[-1], auc[-1]],
+    [auc[-1]//1, auc[-1]//1],
     ":r",
     label="auc of best model using "
     + str(logging_duration_weeks / 4)
     + " months logging",
 )
 plt.plot(
-    [0, size_options[-1]], [auc[-1] - 1, auc[-1] - 1], ":k", label="-1 weeks best auc"
+    [0, size_options[-1]], [auc[-1]//1 - 1, auc[-1]//1 - 1], ":k", label="-1 weeks best auc"
 )
 plt.plot(
-    [0, size_options[-1]], [auc[-1] + 1, auc[-1] + 1], ":k", label="+1 weeks best auc"
+    [0, size_options[-1]], [auc[-1]//1 + 1, auc[-1]//1 + 1], ":k", label="+1 weeks best auc"
 )
-plt.plot([0, size_options[-1]], [fleet_auc, fleet_auc], ":g", label="reality")
+plt.plot([0, size_options[-1]], [fleet_auc//1, fleet_auc//1], ":g", label="reality")
 
 plt.title("AUC (area under curve) of survival curves")
 plt.xlabel(
