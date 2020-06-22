@@ -250,7 +250,7 @@ plt.close("all")
 
 """ ###
 ---
-[Prateek](mailto:prateekpatel.in@gmail.com "Email")
+[Prateek](mailto:prateekpatel.in@gmail.com "Email")  
 [Repository](https://github.com/prteek/IO/tree/battery_model_parameter_estimation "Github")
 
 """
