@@ -247,3 +247,10 @@ st.pyplot()
 
 # Close all plots to avoid hogging RAM
 plt.close("all")
+
+""" ###
+---
+[Prateek](mailto:prateekpatel.in@gmail.com "Email")
+[Repository](https://github.com/prteek/IO/tree/battery_model_parameter_estimation "Github")
+
+"""
