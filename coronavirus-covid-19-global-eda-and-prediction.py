@@ -2,10 +2,6 @@
 # email            : prateekpatel.in@gmail.com
 # description      : SIR model and spread prediction of early stage COVID19 for different countries and worldwide
 
-import os
-
-os.system("pip install -U -r requirements.txt")
-
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors

@@ -2,10 +2,6 @@
 # email            : prateekpatel.in@gmail.com
 # description      : Demonstrates bayesian reasoning
 
-import os
-
-os.system("pip install -U -r requirements.txt")
-
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import SGDClassifier

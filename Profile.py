@@ -2,10 +2,6 @@
 # email            : prateekpatel.in@gmail.com
 # description      : Script to generate a Gantt-chart of employment for portfolio
 
-import os
-
-os.system("pip install -U -r requirements.txt")
-
 # # Prateek Patel
 # #### Mathematical modelling and data science Engineer for Hybrid electric Vehicle development
 # Contact  : prateekpatel.in@gmail.com

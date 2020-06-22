@@ -2,11 +2,6 @@
 # email            : prateekpatel.in@gmail.com
 # description      : Just for fun determination of a polynomial based on input name
 
-import os
-
-os.system("pip install -U -r requirements.txt")
-
-
 name = "Prateek"
 
 

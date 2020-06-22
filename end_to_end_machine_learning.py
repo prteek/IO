@@ -3,9 +3,6 @@
 # description      : Exercise in end-to-end machine learning project
 
 import os
-
-os.system("pip install -U -r requirements.txt")
-
 import tarfile
 import urllib
 from datetime import datetime as DT

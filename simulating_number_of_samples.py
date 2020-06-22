@@ -2,10 +2,6 @@
 # email             : prateekpatel.in@gmail.com
 # description       : simulation to determine number of samples required for a survival analysis study
 
-import os
-
-# os.system("pip install -U -r requirements.txt")
-
 import numpy as np
 import matplotlib.pyplot as plt
 from lifelines import KaplanMeierFitter

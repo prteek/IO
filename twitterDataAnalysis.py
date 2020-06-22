@@ -2,10 +2,6 @@
 # email            : prateekpatel.in@gmail.com
 # description      : Fetch what is trending in your location/any location on twitter
 
-import os
-
-os.system("pip install -U -r requirements.txt")
-
 from twython import Twython
 from collections import Counter
 from geopy import Nominatim

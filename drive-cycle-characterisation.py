@@ -12,11 +12,6 @@
 # Central idea is to take the contributors of energy consumption and express them as a function of vehicle speed <br/>
 #
 
-
-import os
-
-os.system("pip install -U -r requirements.txt")
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt

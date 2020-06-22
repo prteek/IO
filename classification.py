@@ -2,11 +2,6 @@
 # email            : prateekpatel.in@gmail.com
 # description      : Exercise in classification models
 
-import os
-
-os.system("pip install -U -r requirements.txt")
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns

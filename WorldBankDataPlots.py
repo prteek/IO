@@ -2,10 +2,6 @@
 # email            : prateekpatel.in@gmail.com
 # description      : Comparison of metrics for GB and Ind based on data from world bank website
 
-import os
-
-os.system("pip install -U -r requirements.txt")
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt

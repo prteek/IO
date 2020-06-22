@@ -2,9 +2,6 @@
 # email            : prateekpatel.in@gmail.com
 # description      : Demonstrates parameter estimation for physical models of Lithiom Ion battery from test data using non-linear regression, and good and bad side of using Decision tree for the same
 
-import os
-
-os.system("pip install -U -r requirements.txt")
 
 import numpy as np
 from scipy.optimize import curve_fit

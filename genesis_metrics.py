@@ -2,10 +2,6 @@
 # email            : prateekpatel.in@gmail.com
 # description      : Earning projections of investment into Dash coin mining
 
-import os
-
-os.system("pip install -U -r requirements.txt")
-
 import numpy as np
 import matplotlib.pyplot as plt
 import math

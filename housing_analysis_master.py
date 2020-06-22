@@ -2,10 +2,6 @@
 # email            : prateekpatel.in@gmail.com
 # description      : Prediction of guest room usage of houses based on suspected inputs
 
-import os
-
-os.system("pip install -U -r requirements.txt")
-
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
