@@ -157,8 +157,8 @@ for i, n_trucks in enumerate(size_options):
     if i > 3 and i <= len(size_options) - 3:
         continue
     plt.step(
-        time,
-        survival_prob,
+        time[logging_index],
+        survival_prob[logging_index],
         where="post",
         label=str(n_trucks) + " trucks : " + str(sum(observed_event)) + " failed",
     )
