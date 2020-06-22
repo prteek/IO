@@ -105,7 +105,7 @@ button_input =  st.button('Randomise and re-run')
 if button_input:
 	np.random.seed(int(TT.time()))
 
-for n_trucks in size_options:
+for i, n_trucks in enumerate(size_options):
     n_trucks = int(n_trucks)
     # assumption is monitoring starts on perfectly new trucks
     trucks_age_weeks = np.random.choice(fleet_age_distribution, n_trucks, replace=False)
@@ -134,7 +134,7 @@ for n_trucks in size_options:
     kldvg.append(np.nanmean(kldvg_i))
 
     # Plot if number of trucks is is very low or very high (ROI)
-    if n_trucks > 20 and n_trucks < 90:
+    if i > 3 and i <= len(size_options) - 3:
         continue
     plt.step(
         time,
@@ -212,7 +212,8 @@ plt.xlabel(
 )
 plt.ylabel("AUC [weeks]")
 plt.legend()
-plt.xticks(size_options[0:-1:2])
+plt.xticks(np.arange(0, size_options[-1]+size_options[-1]/10, size_options[-1]/10))
+plt.yticks(np.arange(np.nanmin(norm_auc)//1-1, fleet_auc//1+3))
 plt.grid()
 plt.show()
 st.pyplot()
