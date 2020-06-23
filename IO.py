@@ -42,5 +42,6 @@ st.sidebar.markdown(toc_body)
 """ ###
 ---
 [Prateek](mailto:prateekpatel.in@gmail.com "Email")  
+[LinkedIn](https://www.linkedin.com/in/prteek/)
 [Repository](https://github.com/prteek/IO/tree/master "Github")
 """
