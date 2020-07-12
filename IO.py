@@ -20,7 +20,7 @@ st.image(image, caption="IO: Third largest moon of Jupyter", use_column_width=Tr
 toc_body = """
 # IO
 
-[Sample size estimation for survival analysis](http://battery-failure-study.herokuapp.com)  
+[Sample size estimation for survival analysis](https://survival-analysis-sampling.herokuapp.com)  
 [Personal Polynomial](https://personal-polynomial.herokuapp.com)  
 [Raspberry Pi Dashboard](https://prateek-rpi4-stats.anvil.app)  
 [COVID19 early stage forecast](https://covid-19-early-stage-forecast.herokuapp.com)  
