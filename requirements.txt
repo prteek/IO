@@ -26,7 +26,6 @@ streamlit
 
 ## ML
 scikit-learn
-pykitml
 
 ## twitter
 twython
