@@ -5,7 +5,7 @@ plotly-extension:
 	jupyter labextension install jupyterlab-plotly@4.9.0
 
 gitignore:
-	touch .gitignore && echo ".gitignore" >> .gitignore
+	touch .gitignore && echo ".gitignore" >> .gitignore && echo "*__pycache__/" >> .gitignore && echo "*ipynb_checkpoints/" >> .gitignore 
     
 setup: install plotly-extension gitignore
 
