@@ -10,7 +10,7 @@ class home_page():
         return None
     
     def run(self):
-        st.title('Home')
+        st.title('IO')
         st.write("""Hi ! I am your just another friendly neighbourhood Data-Scientist.  
 Similar to your other friendly neighbourhood costumed crusaders, I believe that "with great power comes great responsibility".  
 That is why I rely on sound logic and principles of physics and math for designing and analysing stuff that matter.  
