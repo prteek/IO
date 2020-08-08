@@ -11,9 +11,9 @@ class home_page():
     
     def run(self):
         st.title('Home')
-        st.write("""Hi ! I am just another friendly neighbourhood Data-Scientist.  
-Similar to your other friendly neighbouhood costumed cusaders, I believe that 'with great power comes great responsibility'.  
-Which is why I rely on sound logic and principles of physics and math for designing and analysing things that matter.  
+        st.write("""Hi ! I am your just another friendly neighbourhood Data-Scientist.  
+Similar to your other friendly neighbourhood costumed crusaders, I believe that "with great power comes great responsibility".  
+That is why I rely on sound logic and principles of physics and math for designing and analysing phenomenon that matter.  
 In the past I have worked with Automotive companies like:
 * Suzuki
 * Jaguar Land Rover
