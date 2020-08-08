@@ -11,16 +11,16 @@ class home_page():
     
     def run(self):
         st.title('Home')
-        st.write("""Hi ! I am your just another friendly neighbourhood Data-Scientist.  
+        st.write("""Hi ! I am just another friendly neighbourhood Data-Scientist.  
 Similar to your other friendly neighbouhood costumed cusaders, I believe that 'with great power comes great responsibility'.  
-Which is why I rely on sound logical and principles of physics and math for designing and analysing things that matter.  
+Which is why I rely on sound logic and principles of physics and math for designing and analysing things that matter.  
 In the past I have worked with Automotive companies like:
 * Suzuki
 * Jaguar Land Rover
 * Ford
 * Allison Transmission
 
-To help them make sense of the customer data that they have to aid in reasearch and development of new products, particularly Hybrid Electric vehicles.  
+To help them make sense of the customer usage (and powertrain systems) data that they have, to aid in reasearch and development of new products, particularly Hybrid Electric vehicles.  
 
 I have deep interest in Statistics, Machine learning and Python and I occassionally dabble in Astrophysics and Photography.  
 
