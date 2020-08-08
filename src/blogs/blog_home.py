@@ -10,7 +10,7 @@ def run():
 
         def run(self):
             st.title('Blog home')
-            st.write('Home of Chatties')
+            st.write('Feeling Chatty')
 
     home = home_page()
     
