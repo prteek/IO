@@ -250,7 +250,7 @@ As an exercise in Machine learning Decision tree is also used to avoid physical 
 
     st.markdown(""" ###
     ---
-    [Prateek](https://www.linkedin.com/in/prteek/ "LinkedIn") 
+    [Prateek](https://www.linkedin.com/in/prteek/ "LinkedIn")  
     [Repository](https://github.com/prteek/IO/ "Github")
 
     """)

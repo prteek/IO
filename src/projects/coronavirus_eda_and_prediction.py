@@ -372,7 +372,7 @@ Neverthless, it proved useful as in March itself it gave a rough prediction of g
 
     st.markdown(""" ###
     ---
-    [Prateek](https://www.linkedin.com/in/prteek/ "LinkedIn") 
+    [Prateek](https://www.linkedin.com/in/prteek/ "LinkedIn")  
     [Repository](https://github.com/prteek/IO/ "Github")
 
     """)
