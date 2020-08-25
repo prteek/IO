@@ -4,6 +4,7 @@ from src.projects import battery_model_parameter_estimation as bmpe
 from src.projects import personal_polynomial as ppo
 from src.projects import coronavirus_eda_and_prediction as ceap
 from src.projects import drive_cycle_characterisation as dcc
+from src.projects import raspberry_pi_stats as rpis
 
 def run():
     
@@ -26,6 +27,7 @@ def run():
                 'Personal Polynomial':ppo,
                 'COVID19 EDA and early stage model':ceap,
                 'Drive cycle characterisation':dcc,
+                'Raspberry Pi Stats dashboard':rpis,
                }
 
     page = st.sidebar.selectbox(label='Projects', options=list(projects.keys()))
