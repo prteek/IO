@@ -189,6 +189,7 @@ Neverthless, it proved useful as in March itself it gave a rough prediction of g
         sir_model_fitting(country)
         st.pyplot()
     except:
+        st.markdown("```Model did not converge with current data, please try later.```")
         pass
 
 
@@ -207,8 +208,12 @@ Neverthless, it proved useful as in March itself it gave a rough prediction of g
     plt.show()
     st.pyplot() 
 
-    sir_model_fitting(country)
-    st.pyplot()
+    try:
+        sir_model_fitting(country)
+        st.pyplot()
+    except:
+        st.markdown("```Model did not converge with current data, please try later.```")
+        pass
 
 
     st.markdown(""" ### Global Situation
@@ -250,68 +255,72 @@ Neverthless, it proved useful as in March itself it gave a rough prediction of g
     recoveries_of_top_countries = np.zeros((1, len(recoveries_df.columns[2:])))
     fatalities_of_top_countries = np.zeros((1, len(deaths_df.columns[2:])))
 
-
-    fig, ax = plt.subplots(1, 3, figsize=(20, 4))
-    df = []
-
-    for country in top_confirmed_worldwide.index:
-            data = top_confirmed_worldwide[country]
-            total_of_top_countries = total_of_top_countries + data
-            confirmed_country, recoveries_country, fatalities_country = data_plot_country(
-                country, show_plots=0
-            )
-            confirmed_of_top_countries = confirmed_of_top_countries + np.array(
-                confirmed_country
-            )
-            recoveries_of_top_countries = recoveries_of_top_countries + np.array(
-                recoveries_country
-            )
-            fatalities_of_top_countries = fatalities_of_top_countries + np.array(
-                fatalities_country
-            )
-            ax[0].plot(
-                dates,
-                confirmed_country - recoveries_country - fatalities_country,
-                label=country,
-            )
-            country_fit = sir_model_fitting(country, show_plots=0, days_to_predict=10)
-            df.append(country_fit)
-            ax[1].plot(dates, country_fit[:-10], label=country)
-
-
-    ax[0].grid()
-    ax[0].set_title("Highest number of active cases Worldwide")
-    ax[0].set_ylabel("# confirmed cases")
-    ax[0].set_xticks(date_ticks)
-    ax[0].set_xticklabels(date_labels)
-    ax[0].legend()
-
-    ax[1].grid()
-    ax[1].set_title("Model prediction, active cases worldwide")
-    ax[1].set_ylabel("# predicted confirmed cases")
-    ax[1].set_xticks(date_ticks)
-    ax[1].set_xticklabels(date_labels)
-    ax[1].legend()
+    
+    try:
+        fig, ax = plt.subplots(1, 3, figsize=(20, 4))
+        df = []
+        for country in top_confirmed_worldwide.index:
+                data = top_confirmed_worldwide[country]
+                total_of_top_countries = total_of_top_countries + data
+                confirmed_country, recoveries_country, fatalities_country = data_plot_country(
+                    country, show_plots=0
+                )
+                confirmed_of_top_countries = confirmed_of_top_countries + np.array(
+                    confirmed_country
+                )
+                recoveries_of_top_countries = recoveries_of_top_countries + np.array(
+                    recoveries_country
+                )
+                fatalities_of_top_countries = fatalities_of_top_countries + np.array(
+                    fatalities_country
+                )
+                ax[0].plot(
+                    dates,
+                    confirmed_country - recoveries_country - fatalities_country,
+                    label=country,
+                )
+                country_fit = sir_model_fitting(country, show_plots=0, days_to_predict=10)
+                df.append(country_fit)
+                ax[1].plot(dates, country_fit[:-10], label=country)
 
 
-    top_fatalities_worldwide = deaths_df.loc[:, deaths_df.columns[-1]].sort_values(
-        ascending=False
-    )[:number_of_top_countries_of_interest]
+        ax[0].grid()
+        ax[0].set_title("Highest number of active cases Worldwide")
+        ax[0].set_ylabel("# confirmed cases")
+        ax[0].set_xticks(date_ticks)
+        ax[0].set_xticklabels(date_labels)
+        ax[0].legend()
 
-    for country in top_fatalities_worldwide.index:
-        #     data    = top_fatalities_except_china[country]
-        _, _, fatalities_country = data_plot_country(country, show_plots=0)
-        ax[2].plot(dates, fatalities_country, label=country)
+        ax[1].grid()
+        ax[1].set_title("Model prediction, active cases worldwide")
+        ax[1].set_ylabel("# predicted confirmed cases")
+        ax[1].set_xticks(date_ticks)
+        ax[1].set_xticklabels(date_labels)
+        ax[1].legend()
 
-    ax[2].grid()
-    ax[2].set_title("Highest number of fatalities worldwide")
-    ax[2].set_ylabel("# fatalities")
-    ax[2].set_xticks(date_ticks)
-    ax[2].set_xticklabels(date_labels)
-    ax[2].legend()
-    plt.show()
 
-    st.pyplot()
+        top_fatalities_worldwide = deaths_df.loc[:, deaths_df.columns[-1]].sort_values(
+            ascending=False
+        )[:number_of_top_countries_of_interest]
+
+        for country in top_fatalities_worldwide.index:
+            #     data    = top_fatalities_except_china[country]
+            _, _, fatalities_country = data_plot_country(country, show_plots=0)
+            ax[2].plot(dates, fatalities_country, label=country)
+
+        ax[2].grid()
+        ax[2].set_title("Highest number of fatalities worldwide")
+        ax[2].set_ylabel("# fatalities")
+        ax[2].set_xticks(date_ticks)
+        ax[2].set_xticklabels(date_labels)
+        ax[2].legend()
+        plt.show()
+
+        st.pyplot()
+        
+    except:
+        st.markdown("```Model did not converge with current data, please try later.```")
+        
 
     total_proportion_of_top_countries = total_of_top_countries / worldwide_active_cases[-1]
     print(
@@ -332,31 +341,34 @@ Neverthless, it proved useful as in March itself it gave a rough prediction of g
     )
 
 
+    try:
+        projection_non_top_countries = sir_model_fitting(confirmed_non_top_countries - \
+                recovered_non_top_countries - \
+                fatalities_non_top_countries,
+                passed_data=1,
+                cluster_population=50000000,
+                show_plots=0,
+            )
 
-    projection_non_top_countries = sir_model_fitting(confirmed_non_top_countries - \
-            recovered_non_top_countries - \
-            fatalities_non_top_countries,
-            passed_data=1,
-            cluster_population=50000000,
-            show_plots=0,
+
+        # projection = np.sum(df, axis=0)/total_proportion_of_top_countries # Rough estimate using top countries data only
+        projection = np.sum(df, axis=0) + projection_non_top_countries
+
+        sir_model_fitting(worldwide_active_cases, passed_data=1, cluster_population=50000000)
+        plt.plot(projection)
+        plt.legend(
+            [
+                "Worldwide data",
+                "Prediction by using worldwide data",
+                "today we're here",
+                "Prediction by modelling top clusters individually",
+            ]
         )
-
-
-    # projection = np.sum(df, axis=0)/total_proportion_of_top_countries # Rough estimate using top countries data only
-    projection = np.sum(df, axis=0) + projection_non_top_countries
-
-    sir_model_fitting(worldwide_active_cases, passed_data=1, cluster_population=50000000)
-    plt.plot(projection)
-    plt.legend(
-        [
-            "Worldwide data",
-            "Prediction by using worldwide data",
-            "today we're here",
-            "Prediction by modelling top clusters individually",
-        ]
-    )
-    plt.show()
-    st.pyplot()
+        plt.show()
+        st.pyplot()
+        
+    except:
+        st.markdown("```Model did not converge with current data, please try later.```")
 
 
     st.markdown(""" ### Interested in any other country ?
@@ -367,8 +379,12 @@ Neverthless, it proved useful as in March itself it gave a rough prediction of g
     country_selected = st.selectbox("Select the country/region", confirmed_df.index)
 
     if any(country_selected):
-        sir_model_fitting(country_selected)
-        st.pyplot()
+        try:
+            sir_model_fitting(country_selected)
+            st.pyplot()
+            
+        except:
+            st.markdown("```Model did not converge with current data, please try later.```")
 
     st.markdown(""" ###
     ---
