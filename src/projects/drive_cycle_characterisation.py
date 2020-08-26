@@ -22,13 +22,40 @@ def run():
 The paper aims to establish metrics for real world drive cycles that can be predictors of fuel (energy) consumption.  
 Building on those metrics it proposes a methodology to compare drive cycles based on their aggressiveness or city/highway driving characteristics from fuel consumption point of view.  
 
-Central idea is to take the contributors of energy consumption and express them as a function of vehicle speed""")
+Central idea is to take the contributors of energy consumption and express them as a function of vehicle speed. Then condense them into independent variables so that based on these variables drive cycles can be compared quantitatively.""")
     
-    st.markdown("""### Generate dummy data of RCS and PKE based on statistics from paper  
-**PKE**: Positive kinetic energy, which is normally distributed  
-**RCS**: Relative cubic speed, which is lognormally distributed """)
+    st.latex(r"""\frac{V_{fuel}}{d} \rho_{fuel} Q_{LHV} \eta_{PT} = \frac{E_{PT}}{d} = \frac{E_{rolling} + E_{aero} + E_{+kinetic}}{d} \hspace{1cm} (1)""")
+    
+    st.latex(r"""E_{rolling} = \int{F_{rolling}.vdt} = c_{rolling}mg \int{v dt} = c_{rolling} mg.d \hspace{1cm} (2)""")
+    
+    st.latex(r"""
+    E_{aero} = \int{F_{aero}.vdt} = \frac{1}{2} \rho_{air}c_{d}A\int{v^{3} dt} = \frac{1}{2} \rho_{air}c_{d}A \Sigma (v^{3}\Delta t) \hspace{0.5cm} (3)""")
+    
+    st.latex(r"""E_{+kinetic} = \frac{1}{2}m \Sigma \Delta _{+} (v^{2})             \hspace{1cm} (4) """)
 
-    # In[2]:
+    st.latex(r""" where, \Delta _{+} (v^{2}) = \begin{cases} \Delta (v^{2}), \Delta (v^{2}) >=0 \\    
+    0, \Delta (v^{2}) < 0 \\
+    \end{cases}
+    """)
+
+    st.latex(r"""
+    \frac{E_{PT}}{d} = c_{rolling}mg + \frac{1}{2} \rho_{air}c_{d}A \Sigma (v^{3}\Delta t) + \frac{1}{2}m \Sigma \Delta _{+} (v^{2})
+ 
+ """)
+    
+    st.markdown("""
+    **RCS**: Relative cubic speed  
+    **PKE**: Positive kinetic energy """)
+    
+    st.latex(r""" RCS = \frac{\Sigma(v^{3} \Delta t)}{d} \hspace{1cm} PKE = \frac{\Delta _{+}(v^{2})}{d} """)
+    
+    st.markdown("""Now, based on these 2 metrics the analysis is built to assess the aggressiveness and city/motorway charateristics of drive cycles""")
+    
+    st.markdown("""### Generate dummy data of RCS and PKE  
+The paper uses data from 900 UK based B segment vehicles driving for about 10 days each (so each data point below is one vehicle).  
+Since, we don't have that data available to us we generate data based on the description of the data (log(RCS) and PKE) given in the paper (std, cov).  
+The generated data appears very similar to the actual data used in the paper. """)
+
 
 
     no_cycles = 1000
@@ -103,7 +130,8 @@ Central idea is to take the contributors of energy consumption and express them 
         plt.show()
 
 
-    # In[5]:
+    st.markdown("""### RCS and PKE of regulation cycles  
+For the **cycles**, their RCS and PKE can be calculated from speed data in similar manner but since the data is already available in the paper, we use that """)
 
 
     cycles_data = np.array(
@@ -140,17 +168,9 @@ Central idea is to take the contributors of energy consumption and express them 
     st.pyplot()
 
 
-    # In[6]:
-
-
-    # Checking the data is approximately Chi2 distributed
-
-    d = [
-        mah_distance(lrcs_i, pke_i, mu=mu_data, cov=cov_data)
-        for lrcs_i, pke_i in zip(log_rcs, pke)
-    ]
-
-    normquantplot(d, "Mahalonobis distance")
+    st.markdown("""Since log(RCS) and PKE are both approximately normally distributed, RCS is replaced with log(RCS) for further analysis.  
+Now a bivariate normal (chi2) distribution can be fit to the data.   
+""")
 
     fig = plt.figure()
     plt.plot(log_rcs, pke, ".", alpha=0.5, label="data")
@@ -172,11 +192,65 @@ Central idea is to take the contributors of energy consumption and express them 
     plt.legend()
     plt.show()
     st.pyplot()
+    
+    st.markdown("""But since there is slight correlation between these parameters, a good check of normality is quantile plot of Mahalanobis distance of data points from the mean of the data.
+""")
+    
+    d = [mah_distance(lrcs_i, pke_i, mu=mu_data, cov=cov_data)
+        for lrcs_i, pke_i in zip(log_rcs, pke)]
 
-    # In[7]:
+    normquantplot(d, "Mahalonobis distance")
+    st.pyplot()
+    
+
+    st.markdown("""### Principal Component analysis  
+To remove the correlation between parameters, we can take the principal components in the data and use them as our primary axes of visualisation. This is done in 3 steps: 
+
+1. Find the principal components, and bring the original axes to the mean of the data  
+2. Rotate the original axes to align with the Principal components  
+3. Normalise the data points by eigen values to get comparable x and y axes  
+""")
+    
+    u, l, v = np.linalg.svd(cov_data)
+    theta_svd   = math.atan(u[0][1]/u[0][0])
+
+    s       = np.sqrt(np.identity(2)*l)
+    r       = np.array([[np.cos(theta_svd), -np.sin(theta_svd)], [np.sin(theta_svd), np.cos(theta_svd)]])
+
+    def transform_to_pc(log_rcs_value, pke_value):
+        rcs_pke_vector = np.array([log_rcs_value, pke_value])
+        transformed    = np.linalg.inv(s)@np.linalg.inv(r)@(rcs_pke_vector - np.array(mu_data))
+        return transformed
+
+    transformed_data   = np.array([transform_to_pc(lrcs_i, pke_i) for lrcs_i, pke_i in zip(log_rcs, pke)])
+
+    fig = plt.figure(figsize=(12,6))
+    plt.tight_layout()
+    plt.subplot(1,2,1)
+    plt.plot(log_rcs, pke, '.', alpha=0.3, label='data')
+    plt.plot([mu_data[0], u[0][0]], [mu_data[1], u[0][1]], '--', label='PC2')
+    plt.plot([mu_data[0], u[1][0]], [mu_data[1], u[1][1]], '--', label='PC1')
+    plt.xlim([0,8])
+    plt.ylim([0, 0.8])
+    plt.title('Principal components of data')
+    plt.xlabel('log rcs')
+    plt.ylabel('pke [m/s2]')
+    plt.legend()
+    plt.grid()
 
 
-    # Transform data to align with principle axes
+    plt.subplot(1,2,2)
+    plt.plot(transformed_data[:,0], transformed_data[:,1], '.', alpha=0.3)
+    plt.title('Data scaled and transformed to align with principal components')
+    plt.xlabel('Principal component 1')
+    plt.xlim([-4,4])
+    plt.ylabel('Principal component 2')
+    plt.ylim([-4,4])
+    plt.grid()
+    plt.show()
+    
+    st.pyplot()
+
 
     u, l, v = np.linalg.svd(cov_data)
     theta_svd = math.atan(u[0][1] / u[0][0])
@@ -207,48 +281,14 @@ Central idea is to take the contributors of energy consumption and express them 
     )
 
 
-    # distances from mean of the data
-    distance = np.sqrt(transformed_data[:, 0] ** 2 + transformed_data[:, 1] ** 2)
-    cycle_distance = np.sqrt(transformed_cycles[:, 0] ** 2 + transformed_cycles[:, 1] ** 2)
+    st.markdown("""In a similar way the cycles and trip data can be transformed.  
+    
+Now, since we have 2 independent parameters for each cycle, we can use chi2 distribution which is a function of distance from the mean (or in our case distance from 0).  
 
+The data points can be normalised by total probability of data to visualise on a radar chart.  
 
-    mean_transformed = np.mean(transformed_data, axis=0)  # should be [0,0]
-    cov_transformed = np.cov(
-        transformed_data[:, 0], transformed_data[:, 1]
-    )  # Variance should be unchaged but cov =0
-
-    ecdf = ECDF(distance)  # Chi2 distribution
-
-    # data
-    ci = ecdf(distance)
-    theta = np.array([(math.atan2(y_i, x_i)) for x_i, y_i in transformed_data])
-
-    # cycles
-    ci_cycles = ecdf(cycle_distance)
-    si = ci_cycles * np.array(
-        [math.cos(math.atan2(y_i, x_i)) for x_i, y_i in transformed_cycles]
-    )
-    di = ci_cycles * np.array(
-        [math.sin(math.atan2(y_i, x_i)) for x_i, y_i in transformed_cycles]
-    )
-    theta_cycles = np.array([(math.atan2(y_i, x_i)) for x_i, y_i in transformed_cycles])
-
-    fig = plt.figure()
-    plt.polar(theta, ci, ".", alpha=0.5, label="data")
-    plt.polar(theta_cycles, ci_cycles, "or", ms=10, alpha=0.8, label="cycles")
-    for i, cycle in enumerate(cycle_names):
-        plt.text(
-            theta_cycles[i] - 0.2,
-            ci_cycles[i],
-            cycle,
-            bbox={"facecolor": "black", "alpha": 0.2, "pad": 5},
-        )
-
-    plt.legend(loc="lower left")
-    ax = plt.gca()
-    ax.set_xticklabels(["Motorway", "", "Aggressive", "", "City", "", "Mild", ""])
-    plt.show()
-#     st.pyplot()
+The new coordinate system from the PCA does not necessarily have physical properties directly related to the original parameter set. SI and DI represent the normalised relative distance from a nominal driver with average speed and moderate driving style. CI indicates the distance from the nominal driver in any direction and does not represent fuel consumption.
+""")
 
     # ### Alternate approach to Axes transformations
 
