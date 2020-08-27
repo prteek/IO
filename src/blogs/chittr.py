@@ -4,8 +4,7 @@ def run():
     st.markdown("""##""")
     
     #5
-    st.markdown("""**N** is never enough because if it were *enough* you'd already be on to the next problem for which you need more data.  
-    - Andre Gelman, on sample size. 
+    st.markdown("""**N** is never enough because if it were *enough* you'd already be on to the next problem for which you need more data. - Andrew Gelman, on sample size. 
     
 ---
 """)
