@@ -2,7 +2,14 @@ import streamlit as st
 def run():
     st.title("Chittr")    
     st.markdown("""##""")
-
+    
+    #5
+    st.markdown("""**N** is never enough because if it were *enough* you'd already be on to the next problem for which you need more data.  
+    - Andre Gelman, on sample size. 
+    
+---
+""")
+    
     #4
     st.markdown("""The tougher the question the easier it is dismissed. When we be facing an easy dismissal, it be worth asking “was the problem even well understood?”
     
