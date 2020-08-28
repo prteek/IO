@@ -40,8 +40,9 @@ If you'd like to get in touch, please use the details below:
 home = home_page()
     
 projects = {'Home':home,
-            'Projects':ph, 
-         'Blog posts':bh}
+            'Chittr':bh,
+            'Projects':ph,
+           }
 
 
 page = st.sidebar.radio(label='Go to', options=list(projects.keys()))
