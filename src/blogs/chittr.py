@@ -3,6 +3,15 @@ def run():
     st.title("Chittr")    
     st.markdown("""##""")
     
+
+    #7
+    st.markdown("""Seems like to generalise models currently we are trying to overfit on the universal data using billions of parameters.
+    Does trying to learn universe like this truly mean *general intelligence* ? 
+    
+    --- 
+    """)
+    
+    
     #6
     html_string = """<blockquote class="twitter-tweet"><p lang="en" dir="ltr">I’ve decided I’m going to learn Bayesian statistics just for the cool acronyms (MCMC, ADVI, NUTS). <a href="https://twitter.com/hashtag/bayesian?src=hash&amp;ref_src=twsrc%5Etfw">#bayesian</a> <a href="https://twitter.com/hashtag/pymc3?src=hash&amp;ref_src=twsrc%5Etfw">#pymc3</a> <a href="https://twitter.com/hashtag/bayesianmethodsforhackers?src=hash&amp;ref_src=twsrc%5Etfw">#bayesianmethodsforhackers</a> <a href="https://twitter.com/hashtag/pomegranate?src=hash&amp;ref_src=twsrc%5Etfw">#pomegranate</a></p>&mdash; Prateek (@prateekpatel_in) <a href="https://twitter.com/prateekpatel_in/status/1300494258336563203?ref_src=twsrc%5Etfw">August 31, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     
