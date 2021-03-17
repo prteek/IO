@@ -8,8 +8,8 @@ def run():
     st.markdown("""Seems like to generalise models currently we are trying to overfit on the universal data using billions of parameters.
     Does trying to learn universe like this truly mean *general intelligence* ? 
     
-    --- 
-    """)
+--- 
+""")
     
     
     #6
