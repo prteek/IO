@@ -14,3 +14,6 @@ nbstripout:
 
 black:
 	black *.py
+    
+clean:
+    rm -r .ipynb_checkpoints/
