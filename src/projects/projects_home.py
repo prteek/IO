@@ -5,6 +5,7 @@ from src.projects import personal_polynomial as ppo
 from src.projects import coronavirus_eda_and_prediction as ceap
 from src.projects import drive_cycle_characterisation as dcc
 from src.projects import raspberry_pi_stats as rpis
+from src.projects import hastie_monitoring as hm
 
 def run():
     
@@ -24,6 +25,7 @@ def run():
     projects = {'Home':home,
                 'Determining number of samples for a study':snos,
                 'Drive cycle characterisation':dcc,
+                'Hastie pipeline monitoring': hm,
                 'Battery model parameter estimation':bmpe,
                 'COVID19 EDA and early stage model':ceap,
 #                 'Personal Polynomial':ppo,

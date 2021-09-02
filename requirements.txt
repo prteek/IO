@@ -5,6 +5,7 @@ nbdime
 pixiedust
 joblib
 pydotplus
+python-dotenv
 dill
 black
 pyflakes
@@ -32,3 +33,7 @@ geopy
 
 ## vision
 opencv-python
+
+
+## AWS
+boto3
