@@ -15,7 +15,6 @@ numpy
 pandas
 scipy
 dask[complete]
-statsmodels
 lifelines
 
 ## Visualisation
