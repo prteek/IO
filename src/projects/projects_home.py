@@ -22,12 +22,12 @@ def run():
     home = home_page()
     
     projects = {'Home':home,
-                'Determining number of samples for a study':snos, 
-                'Battery model parameter estimation':bmpe,
-                'Personal Polynomial':ppo,
-                'COVID19 EDA and early stage model':ceap,
+                'Determining number of samples for a study':snos,
                 'Drive cycle characterisation':dcc,
-                'Raspberry Pi Stats dashboard':rpis,
+                'Battery model parameter estimation':bmpe,
+                'COVID19 EDA and early stage model':ceap,
+#                 'Personal Polynomial':ppo,
+#                 'Raspberry Pi Stats dashboard':rpis,
                }
 
     page = st.sidebar.selectbox(label='Projects', options=list(projects.keys()))

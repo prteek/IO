@@ -10,6 +10,7 @@ import pandas as pd
 from sklearn.tree import export_graphviz
 import pydotplus
 import streamlit as st
+from plotly import graph_objects as go
 
 def run():
     st.title('Battery model parameter estimation using non-linear regression')
@@ -62,15 +63,12 @@ As an exercise in Machine learning Decision tree is also used to avoid physical 
     This data represents a test where battery was discharging a constant current and Voltage response was observed with time.
 
     """)
-    fig = plt.figure()
-    plt.plot(time, voltage, ".")
-    plt.title("Dummy data")
-    plt.grid()
-    plt.xlabel("time [s]")
-    plt.ylabel("cell voltage [V]")
-    plt.show()
-
-    st.pyplot()
+    fig = go.Figure()
+    fig.add_scatter(x=time, y=voltage, mode='markers')
+    fig.update_layout({'title':"Dummy data",
+                       'xaxis_title': 'time [s]',
+                       'yaxis_title':'cell_voltage [V]'})
+    st.plotly_chart(fig)
 
 
     # Fitting Dual polarisation model to dummy data
@@ -83,16 +81,12 @@ As an exercise in Machine learning Decision tree is also used to avoid physical 
 
     popt, pcov = curve_fit(model, X_in, voltage, p0=ini, bounds=(0, np.Inf))
 
-    fig = plt.figure()
-    plt.plot(time, voltage, ".", label="data")
-    plt.plot(time, model(X_in, *popt), ".", label="DP model fit to data")
-    plt.grid()
-    plt.legend()
-    plt.xlabel("time [s]")
-    plt.ylabel("cell voltage [V]")
-    plt.show()
-
-    st.pyplot()
+    fig = go.Figure()
+    fig.add_scatter(x=time, y=voltage, mode='markers', name="data")
+    fig.add_scatter(x=time, y=model(X_in, *popt), mode="lines", name="DP model fit to data")
+    fig.update_layout({'xaxis_title': 'time [s]',
+                       'yaxis_title':'cell_voltage [V]'})
+    st.plotly_chart(fig)
 
     df = pd.DataFrame(
         np.c_[[R0, R1, C1, R2, C2], popt],
@@ -111,17 +105,13 @@ As an exercise in Machine learning Decision tree is also used to avoid physical 
     ini = np.array([R0, R1, C1]) * 2
 
     popt, pcov = curve_fit(model2, X_in, voltage, p0=ini, bounds=(0, np.Inf))
-
-    plt.figure()
-    plt.plot(time, voltage, ".", label="data")
-    plt.plot(time, model2(X_in, *popt), ".", label="R-RC model fit to data")
-    plt.grid()
-    plt.legend()
-    plt.xlabel("time [s]")
-    plt.ylabel("cell voltage [V]")
-    plt.show()
-
-    st.pyplot()
+    fig = go.Figure()
+    fig.add_scatter(x=time, y=voltage, mode='markers', name="data")
+    fig.add_scatter(x=time, y=model2(X_in, *popt), mode="lines", name="R-RC model fit to data")
+    fig.update_layout({'xaxis_title': 'time [s]',
+                       'yaxis_title':'cell_voltage [V]'})
+    st.plotly_chart(fig)
+    
 
     df = pd.DataFrame(
         np.c_[[R0, R1, C1], popt],
@@ -165,17 +155,14 @@ As an exercise in Machine learning Decision tree is also used to avoid physical 
             columns=["Fitted parameters", "Variance of fit"],
         )
     )
-
-    plt.figure()
-    plt.plot(time, voltage, ".", label="logged voltage")
-    plt.plot(time, model(X_data, *popt), ":", label="modelled voltage")
-    plt.grid()
-    plt.xlabel('time [sec]')
-    plt.ylabel('cell voltage [V]')
-    plt.legend()
-    plt.show()
-
-    st.pyplot()
+    
+    
+    fig = go.Figure()
+    fig.add_scatter(x=time, y=voltage, mode='markers', name="logged voltage")
+    fig.add_scatter(x=time, y=model(X_data, *popt), mode="lines", name="modelled voltage")
+    fig.update_layout({'xaxis_title': 'time [s]',
+                       'yaxis_title':'cell_voltage [V]'})
+    st.plotly_chart(fig)
 
     error = voltage - model(X_data, *popt)
     msg = "\n RMSE: %f" % (np.sqrt(np.mean(error ** 2)))
@@ -214,16 +201,13 @@ As an exercise in Machine learning Decision tree is also used to avoid physical 
     v_predict = tree.predict(X_test)
     v_predict_rf = tree.predict(X_test)
 
-    plt.figure()
-    plt.plot(X_train[:, 0], voltage, ".", label="training data")
-    plt.plot(X_test[:, 0], v_predict, ".", label="test data")
-    plt.xlabel("time [sec]")
-    plt.ylabel("cell voltage [V]")
-    plt.grid()
-    plt.legend()
-    plt.show()
-
-    st.pyplot()
+    fig = go.Figure()
+    fig.add_scatter(x=X_train[:, 0], y=voltage, mode='markers', name="training data")
+    fig.add_scatter(x=X_test[:, 0], y=v_predict, mode='markers', name="test data")
+    fig.update_layout({'xaxis_title': 'time [s]',
+                       'yaxis_title':'cell_voltage [V]'})
+    
+    st.plotly_chart(fig)
 
     st.markdown(""" What this shows is that to get a machine model that represents holistic picture of battery behaviour, across current draw, duration of pulse, SOC, temperature:
 
