@@ -15,6 +15,7 @@ import streamlit as st
 from scipy.integrate import odeint
 from scipy.optimize import curve_fit
 from sklearn.metrics import r2_score
+from plotly import graph_objects as go
 
 def run():
     st.title('COVID 19 early stage forecast')
@@ -26,7 +27,7 @@ As the situation progressed, the SIR model became irrelevant since the disease s
     
 The actual recovery also happened to be a function of hospital capacity and immunity levels of different demographics and the model could not account for those variations in detail.  
     
-Neverthless, it proved useful as in March itself it gave a rough prediction of getting close to 2 million cases worldwide by end of april, which was not completely off the charts.
+Neverthless, it proved useful as in March 2020 itself it gave a rough prediction of getting close to 2 million cases worldwide by end of April 2020, which was not completely off the charts.
 
     """)
 
@@ -53,15 +54,22 @@ Neverthless, it proved useful as in March itself it gave a rough prediction of g
     recoveries_df = recoveries_df.groupby(["Country/Region"]).sum()
     deaths_df = deaths_df.groupby(["Country/Region"]).sum()
 
-    dates = np.array([dt[:-3] for dt in confirmed_df.columns[2:]])
-
+    dates_raw = np.array([dt for dt in confirmed_df.columns[2:]])
+    dates = np.array([dt[:-3] for dt in dates_raw[:70]]) # Take only inital data until April 2020
+    
+    columns_to_drop = dates_raw[70:]
+    confirmed_df.drop(columns=columns_to_drop, inplace=True)
+    recoveries_df.drop(columns=columns_to_drop, inplace=True)
+    deaths_df.drop(columns=columns_to_drop, inplace=True)
+    
+    
     date_ticks = [int(i) for i in np.linspace(0, len(dates) - 1, 10)]  # 10 ticks
     date_labels = dates[date_ticks]
 
     text = "Last updated: %s" % (confirmed_df.columns[-1])
 
-    st.text(text)
-    print(text)
+#     st.text(text)
+#     print(text)
 
     st.markdown(""" ### SIR (Susceptible-Infectious-Recovered) model is used for prediction of active number of cases
 
@@ -111,17 +119,16 @@ Neverthless, it proved useful as in March itself it gave a rough prediction of g
         fitted = np.append(np.zeros((ind, 1)), fitted)
 
         if show_plots:
-            fig = plt.figure()
-            plt.plot(xdata, ydata, "o")
-            plt.plot(np.arange(len(fitted)) + 1, fitted)
-            plt.plot([len(xdata), len(xdata)], [0, np.max(fitted)], ":k")
-            plt.legend(["data", "model prediction", "today we're here"])
-            plt.title("SIR model fit to 'active cases' of " + country)
-            plt.ylabel("Population infected")
-            plt.xlabel("Days since 22 Jan 2020")
-            plt.grid()
-            plt.show()
-
+            fig, ax = plt.subplots()
+            ax.plot(xdata, ydata, "o")
+            ax.plot(np.arange(len(fitted)) + 1, fitted)
+            ax.plot([len(xdata), len(xdata)], [0, np.max(fitted)], ":k")
+            ax.legend(["data", "model prediction", "beginning April"])
+            ax.set_title("SIR model fit to 'active cases' of " + country)
+            ax.set_ylabel("Population infected")
+            ax.set_xlabel("Days since 22 Jan 2020")
+            ax.grid()
+            
             print(
                 "Optimal parameters: beta =",
                 round(popt[0], 3),
@@ -135,6 +142,7 @@ Neverthless, it proved useful as in March itself it gave a rough prediction of g
                 " std_gamma =",
                 np.round(np.sqrt(pcov[1][1]), 3),
             )
+            return fig, ax
         else:
             return fitted
 
@@ -150,22 +158,24 @@ Neverthless, it proved useful as in March itself it gave a rough prediction of g
         deaths = np.array(deaths_df.loc[country, deaths_df.columns[2:]])
 
         if show_plots:
-            fig = plt.figure()
-            plt.stackplot(
+            fig, ax = plt.subplots()
+            ax.stackplot(
                 dates,
                 confirmed - recovered - deaths,
                 recovered,
                 deaths,
                 labels=["active cases", "recovered", "deaths"],
             )
-            plt.grid()
-            plt.title("Cases in " + country)
-            plt.ylabel("# of cases")
-            plt.xticks(date_ticks, date_labels)
-            plt.legend(loc="upper left")
+            ax.grid()
+            ax.set_title("Cases in " + country)
+            ax.set_ylabel("# of cases")
+            ax.set_xticks(date_ticks)
+            ax.set_xticklabels(date_labels)
+            ax.legend(loc="upper left")
             print("Mortality rate:", round(deaths[-1] / confirmed[-1] * 100, 2), "%")
-
-        return confirmed, recovered, deaths
+            return confirmed, recovered, deaths, fig, ax
+        else:
+            return confirmed, recovered, deaths
 
     st.markdown(""" ### Situation in China  
     28 March, 2020  
@@ -178,16 +188,14 @@ Neverthless, it proved useful as in March itself it gave a rough prediction of g
 
 
     country = "China"
-    china_confirmed, china_recovered, china_fatalities = data_plot_country(country)
-    plt.plot([1, 1], [0, np.max(china_confirmed)], ":r", label="Hubei Lockdown")
-    plt.legend(loc="upper left")
-    plt.show()
-    st.pyplot()
-
+    china_confirmed, china_recovered, china_fatalities, fig, ax = data_plot_country(country)
+    ax.plot([1, 1], [0, np.max(china_confirmed)], ":r", label="Hubei Lockdown")
+    ax.legend(loc="upper left")
+    st.pyplot(fig)
     # This creates issues sometimes in Pyto
     try:
-        sir_model_fitting(country)
-        st.pyplot()
+        fig, ax = sir_model_fitting(country)
+        st.pyplot(fig)
     except:
         st.markdown("```Model did not converge with current data, please try later.```")
         pass
@@ -204,13 +212,12 @@ Neverthless, it proved useful as in March itself it gave a rough prediction of g
 
 
     country = "Korea, South"
-    korea_confirmed, _, _ = data_plot_country(country)
-    plt.show()
-    st.pyplot() 
+    korea_confirmed, _, _, fig, ax = data_plot_country(country)
+    st.pyplot(fig) 
 
     try:
-        sir_model_fitting(country)
-        st.pyplot()
+        fig, ax = sir_model_fitting(country)
+        st.pyplot(fig)
     except:
         st.markdown("```Model did not converge with current data, please try later.```")
         pass
@@ -256,7 +263,7 @@ Neverthless, it proved useful as in March itself it gave a rough prediction of g
     fatalities_of_top_countries = np.zeros((1, len(deaths_df.columns[2:])))
 
     
-    try:
+    try:   
         fig, ax = plt.subplots(1, 3, figsize=(20, 4))
         df = []
         for country in top_confirmed_worldwide.index:
@@ -316,9 +323,10 @@ Neverthless, it proved useful as in March itself it gave a rough prediction of g
         ax[2].legend()
         plt.show()
 
-        st.pyplot()
+        st.pyplot(fig)
         
-    except:
+    except Exception as e:
+        st.write(e)
         st.markdown("```Model did not converge with current data, please try later.```")
         
 
@@ -354,9 +362,9 @@ Neverthless, it proved useful as in March itself it gave a rough prediction of g
         # projection = np.sum(df, axis=0)/total_proportion_of_top_countries # Rough estimate using top countries data only
         projection = np.sum(df, axis=0) + projection_non_top_countries
 
-        sir_model_fitting(worldwide_active_cases, passed_data=1, cluster_population=50000000)
-        plt.plot(projection)
-        plt.legend(
+        fig, ax = sir_model_fitting(worldwide_active_cases, passed_data=1, cluster_population=50000000)
+        ax.plot(projection)
+        ax.legend(
             [
                 "Worldwide data",
                 "Prediction by using worldwide data",
@@ -364,10 +372,10 @@ Neverthless, it proved useful as in March itself it gave a rough prediction of g
                 "Prediction by modelling top clusters individually",
             ]
         )
-        plt.show()
-        st.pyplot()
+        st.pyplot(fig)
         
-    except:
+    except Exception as e:
+        st.write(e)
         st.markdown("```Model did not converge with current data, please try later.```")
 
 
@@ -380,10 +388,11 @@ Neverthless, it proved useful as in March itself it gave a rough prediction of g
 
     if any(country_selected):
         try:
-            sir_model_fitting(country_selected)
-            st.pyplot()
+            fig, ax = sir_model_fitting(country_selected)
+            st.pyplot(fig)
             
-        except:
+        except Exception as e:
+            st.write(e)
             st.markdown("```Model did not converge with current data, please try later.```")
 
     st.markdown(""" ###
