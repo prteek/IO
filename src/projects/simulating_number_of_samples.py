@@ -9,6 +9,7 @@ from scipy.special import kl_div
 import time as TT
 from scipy.interpolate import interp1d
 import streamlit as st
+from plotly import graph_objects as go
 
 def run():
     
@@ -71,16 +72,13 @@ def run():
 
     """)
 
-    plt.figure()
-    plt.hist(
-        fleet_age_distribution, bins=np.arange(0, 49, 4), density=False, label="full fleet"
-    )
-    plt.title("Distribution of battery life for fleet")
-    plt.xlabel("Battery life [weeks]")
-    plt.ylabel("Number of fleet trucks")
-    plt.grid()
-    plt.show()
-    st.pyplot()
+    fig = go.Figure(data=[go.Histogram(x=fleet_age_distribution)])
+    
+    fig.update_layout({'title':'Distribution of battery life for fleet', 
+                       'xaxis_title':'Battery life [weeks]', 
+                       'yaxis_title': 'Number of Trucks'})
+    
+    st.plotly_chart(fig)
 
     # Choose trucks and model their age
 
@@ -111,7 +109,7 @@ def run():
     auc = []
     norm_auc = []
     kldvg = []
-    plt.figure()
+    fig = go.Figure()
     kmf = KaplanMeierFitter()
     # Full fleet data model
     observed_event = fleet_age_distribution <= 9999
@@ -176,37 +174,36 @@ def run():
 
             kldvg[i, i_iter] = np.nanmean(kldvg_i)
 
-            #         Plot if number of trucks is very low or very high (ROI) and only 1 iteration
+            #  Plot if number of trucks is very low or very high (ROI) and only 1 iteration
             if i_iter == 0:
                 if i > 3 and i <= len(size_options) - 3:
                     continue
-                plt.step(
-                    time[logging_index],
-                    survival_prob[logging_index],
-                    where="post",
-                    label=str(n_trucks)
-                    + " trucks : "
-                    + str(sum(observed_event))
-                    + " failed",
-                )
+                    
+                fig.add_trace(go.Scatter(x=time[logging_index], 
+                                         y=survival_prob[logging_index],
+                                        name=str(n_trucks)
+                                         + " trucks : "
+                                         + str(sum(observed_event))
+                                         + " failed",
+                                        line={'shape':'hv'},
+                                        mode='lines'
+                                        )
+                             )
 
 
-    plt.step(time_fleet, survival_prob_fleet, where="post", label="reality")
-    plt.plot(
-        [logging_duration_weeks, logging_duration_weeks],
-        [0, 1],
-        ":k",
-        label="logging_duration",
-    )
-    plt.title("Survival Probabilities")
-    plt.ylabel("est. probability of survival")
-    plt.xlabel("time [weeks]")
-    plt.legend()
-    plt.grid()
-    plt.show()
-    st.pyplot()
+    fig.add_trace(go.Scatter(x=time_fleet, 
+                             y=survival_prob_fleet, 
+                             name="reality",
+                            line={'shape':'hv'}))
+    fig.add_scatter(x=[logging_duration_weeks, logging_duration_weeks],
+                   y = [0,1], name="logging duration", mode='lines', line={'dash':'dot'})
 
-
+    fig.update_layout({"title": "Survival Probabilities",
+                      "xaxis_title": "time [weeks]",
+                      "yaxis_title": "est. probability of survival"})
+    
+    st.plotly_chart(fig)
+    
     auc_org = auc
     norm_auc_org = norm_auc
 
@@ -242,44 +239,29 @@ def run():
     """)
 
 
-    plt.figure()
-    plt.plot(
-        size_options, auc // 1, "b", label="mean of AUC over %d iterations" % (n_iters)
-    )
-    plt.plot(size_options, (auc + 2 * std_auc) // 1, ":k", label="mean + 2*std")
-    plt.plot(size_options, (auc - 2 * std_auc) // 1, ":k", label="mean - 2*std")
-
-    # plt.plot(size_options, norm_auc // 1, "b", label="KL weighted auc")
-    # plt.plot(size_options, kldvg*100, label="samples kldvg*100")
-
-    plt.plot(
-        [0, size_options[-1]],
-        [auc[-1] // 1, auc[-1] // 1],
-        ":r",
-        label="AUC by selecting entire fleet",
-    )
-
-    plt.plot([0, size_options[-1]], [fleet_auc // 1, fleet_auc // 1], ":g", label="reality")
-
-    plt.title("AUC of survival curves, by repeating the exercise %d times" % (n_iters))
-    plt.xlabel(
-        "number of trucks studied over " + str(logging_duration_weeks / 4) + " months"
-    )
-
-    plt.ylabel("AUC (Area under the curve) [weeks]")
-    plt.legend()
-    plt.xticks(
-        np.arange(0, size_options[-1] + size_options[-1] / 10, size_options[-1] / 10)
-    )
-    # plt.yticks(np.arange(np.nanmin(norm_auc) // 1 - 1, fleet_auc // 1 + 3))
-    plt.grid()
-    plt.show()
-    st.pyplot()
+    fig = go.Figure()
+    
+    fig.add_scatter(x=size_options, 
+                   y=auc // 1,
+                   name=f"mean of AUC over {n_iters} iterations")
+    fig.add_scatter(x=size_options, y=(auc + 2 * std_auc) // 1, 
+                    name="mean + 2*std", line={'dash':'dash'})
+    fig.add_scatter(x=size_options, y=(auc - 2 * std_auc) // 1, 
+                    name="mean - 2*std", line={'dash':'dash'})
+    
+    fig.add_scatter(x=[0, size_options[-1]],y=[auc[-1] // 1, auc[-1] // 1],
+                    name="AUC by selecting entire fleet", line={'dash':'dot'}, mode='lines')
+    fig.add_scatter(x=[0, size_options[-1]], y=[fleet_auc // 1, fleet_auc // 1],
+                    name="reality", line={'dash':'dot'}, mode='lines')
+    
+    fig.update_layout({"title": f"AUC of survival curves, by repeating the exercise {n_iters} times",
+                      "xaxis_title": f"number of trucks studied over {logging_duration_weeks / 4} months",
+                      "yaxis_title": "AUC (Area under the curve) [weeks]"})
+    
+    st.plotly_chart(fig)
 
     elapsed = TT.time() - tic
     print(elapsed)
-    # Close all plots to avoid hogging RAM
-    plt.close("all")
 
     st.markdown(""" ###
     ---

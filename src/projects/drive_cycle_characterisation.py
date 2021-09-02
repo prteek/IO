@@ -6,10 +6,9 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-
 from scipy.stats import norm
-from statsmodels.distributions.empirical_distribution import ECDF
-
+from plotly import graph_objects as go
+from plotly.subplots import make_subplots
 import math
 from sklearn.decomposition import PCA
 import streamlit as st
@@ -75,15 +74,14 @@ The generated data appears very similar to the actual data used in the paper. ""
     mu_data = [np.mean(log_rcs), np.mean(pke)]
     cov_data = np.cov([log_rcs, pke])
 
-    fig = plt.figure()
-    plt.plot(rcs, pke, ".", alpha=0.2)
-    plt.title("RCS vs PKE")
-    plt.xlabel("relative cubic speed [m2/s2]")
-    plt.ylabel("positive kinetic energy [m/s2]")
-    plt.grid()
-    plt.show()
-    st.pyplot()
-
+    fig = go.Figure()
+    fig.add_scatter(x=rcs, y=pke, mode='markers', opacity=0.7)
+    
+    fig.update_layout({"title": "RCS vs PKE",
+                      "xaxis_title":"relative cubic speed [m2/s2]",
+                      "yaxis_title":"positive kinetic energy [m/s2]"})
+    
+    st.plotly_chart(fig)
 
     # In[4]:
 
@@ -117,18 +115,28 @@ The generated data appears very similar to the actual data used in the paper. ""
         dev = np.std(dataVect)
         per = (np.arange(len(dataVect)) + 1) / len(dataVect)
         zvals = norm.ppf(per)
-        fig = plt.figure()
-        plt.plot(dataVect, zvals, "+", label=title)
-        plt.plot(
-            [mm - 2 * dev, mm + 2 * dev], [-2, 2], "--", label="Approximate Normal line"
-        )
-        plt.title("Normal Quantile plot of " + title)
-        plt.ylabel("Normal Score")
-        plt.xlabel(title)
-        plt.grid()
-        plt.legend()
-        plt.show()
+        fig = go.Figure()
+        fig.add_scatter(x=dataVect, y=zvals, mode='markers', name=title)
+        fig.add_scatter(x=[mm - 2 * dev, mm + 2 * dev], 
+                        y=[-2, 2], mode='lines', line={'dash':'dash'},
+                        name="Approximate Normal line")
+        
+        fig.update_layout({"title": f"Normal Quantile plot of {title}",
+                      "xaxis_title":title,
+                      "yaxis_title":"Normal Score"})
+        
+        st.plotly_chart(fig)
+        
+        return None
 
+        
+    def ECDF(x):
+        x = np.sort(x)
+        n = len(x)
+        def _ecdf(v):
+            # side='right' because we want Pr(x <= v)
+            return (np.searchsorted(x, v, side='right') + 1) / n
+        return _ecdf
 
     st.markdown("""### RCS and PKE of regulation cycles  
 For the **cycles**, their RCS and PKE can be calculated from speed data in similar manner but since the data is already available in the paper, we use that """)
@@ -149,49 +157,35 @@ For the **cycles**, their RCS and PKE can be calculated from speed data in simil
     cycle_names = ["wltp", "nedc", "ftp75", "hwfet", "us06", "sc03", "la92", "jc08"]
 
     fig = plt.figure()
-    plt.plot(rcs, pke, ".", alpha=0.5, label="data")
-    plt.plot(cycles_data[:, 0], cycles_data[:, 1], "or", alpha=0.8, ms=10, label="cycles")
-    for i, cycle in enumerate(cycle_names):
-        plt.text(
-            cycles_data[i][0] + 50,
-            cycles_data[i][1] + 0.02,
-            cycle,
-            bbox={"facecolor": "black", "alpha": 0.2, "pad": 5},
-        )
-
-    plt.title("RCS vs PKE")
-    plt.xlabel("relative cubic speed [m2/s2]")
-    plt.ylabel("positive kinetic energy [m/s2]")
-    plt.grid()
-    plt.legend()
-    plt.show()
-    st.pyplot()
-
+    fig = go.Figure()
+    fig.add_scatter(x=rcs,y=pke, mode='markers', opacity=0.7, name="data")
+    fig.add_scatter(x=cycles_data[:, 0], y=cycles_data[:, 1], 
+                    mode='markers+text', marker={'size':10}, 
+                    text=cycle_names, textposition="bottom center",
+                    name="cycles")
+    
+    fig.update_layout({"title": "RCS vs PKE",
+                      "xaxis_title":"relative cubic speed [m2/s2]",
+                      "yaxis_title":"positive kinetic energy [m/s2]"})
+        
+    st.plotly_chart(fig)
 
     st.markdown("""Since log(RCS) and PKE are both approximately normally distributed, RCS is replaced with log(RCS) for further analysis.  
 Now a bivariate normal (chi2) distribution can be fit to the data.   
 """)
 
-    fig = plt.figure()
-    plt.plot(log_rcs, pke, ".", alpha=0.5, label="data")
-    plt.plot(
-        np.log(cycles_data[:, 0]), cycles_data[:, 1], "or", alpha=0.8, ms=10, label="cycles"
-    )
-    for i, cycle in enumerate(cycle_names):
-        plt.text(
-            np.log(cycles_data[i][0]) + 0.1,
-            cycles_data[i][1] + 0.02,
-            cycle,
-            bbox={"facecolor": "black", "alpha": 0.2, "pad": 5},
-        )
+    fig = go.Figure()
+    fig.add_scatter(x=log_rcs, y=pke, mode='markers', opacity=0.5, name="data")
+    fig.add_scatter(x=np.log(cycles_data[:, 0]), y=cycles_data[:, 1], 
+                    mode='markers+text', marker={'size':10}, 
+                    text=cycle_names, textposition="bottom center",
+                    name="cycles")
 
-    plt.title("LogRCS vs PKE")
-    plt.xlabel("log relative cubic speed")
-    plt.ylabel("positive kinetic energy [m/s2]")
-    plt.grid()
-    plt.legend()
-    plt.show()
-    st.pyplot()
+    fig.update_layout({"title": "LogRCS vs PKE",
+                      "xaxis_title":"log relative cubic speed",
+                      "yaxis_title":"positive kinetic energy [m/s2]"})
+        
+    st.plotly_chart(fig)
     
     st.markdown("""But since there is slight correlation between these parameters, a good check of normality is quantile plot of Mahalanobis distance of data points from the mean of the data.
 """)
@@ -200,7 +194,6 @@ Now a bivariate normal (chi2) distribution can be fit to the data.
         for lrcs_i, pke_i in zip(log_rcs, pke)]
 
     normquantplot(d, "Mahalonobis distance")
-    st.pyplot()
     
 
     st.markdown("""### Principal Component analysis  
@@ -223,34 +216,38 @@ To remove the correlation between parameters, we can take the principal componen
         return transformed
 
     transformed_data   = np.array([transform_to_pc(lrcs_i, pke_i) for lrcs_i, pke_i in zip(log_rcs, pke)])
-
-    fig = plt.figure(figsize=(12,6))
-    plt.tight_layout()
-    plt.subplot(1,2,1)
-    plt.plot(log_rcs, pke, '.', alpha=0.3, label='data')
-    plt.plot([mu_data[0], u[0][0]], [mu_data[1], u[0][1]], '--', label='PC2')
-    plt.plot([mu_data[0], u[1][0]], [mu_data[1], u[1][1]], '--', label='PC1')
-    plt.xlim([0,8])
-    plt.ylim([0, 0.8])
-    plt.title('Principal components of data')
-    plt.xlabel('log rcs')
-    plt.ylabel('pke [m/s2]')
-    plt.legend()
-    plt.grid()
-
-
-    plt.subplot(1,2,2)
-    plt.plot(transformed_data[:,0], transformed_data[:,1], '.', alpha=0.3)
-    plt.title('Data scaled and transformed to align with principal components')
-    plt.xlabel('Principal component 1')
-    plt.xlim([-4,4])
-    plt.ylabel('Principal component 2')
-    plt.ylim([-4,4])
-    plt.grid()
-    plt.show()
     
-    st.pyplot()
+    fig = make_subplots(rows=1, cols=2, subplot_titles = ('PCs of data', 
+                                        'Data aligned to PCs'))
+    fig.add_trace(
+        go.Scatter(x=log_rcs, y=pke, mode='markers', opacity=0.7, name='data'),
+        row=1, col=1
+    )
+    
+    fig.add_trace(
+        go.Scatter(x=[mu_data[0], u[0][0]], y=[mu_data[1], u[0][1]], 
+                   mode='lines', line={'dash':'dash'}, name='PC2'),
+        row=1, col=1
+    )
+    fig.add_trace(
+        go.Scatter(x=[mu_data[0], u[1][0]], y=[mu_data[1], u[1][1]], 
+                   mode='lines', line={'dash':'dash'}, name='PC1'),
+        row=1, col=1
+    )
+    
+    fig.add_trace(
+        go.Scatter(x=transformed_data[:,0], y=transformed_data[:,1], 
+                   mode='markers', name='transformed data'),
+        row=1, col=2
+    )
 
+    fig.update_layout(height=450, width=800, title_text="Principle Components decomposition")
+    fig.update_xaxes(title_text="log rcs", range=[0, 8], row=1, col=1)
+    fig.update_yaxes(title_text="pke [m/s2]", range=[0,0.8], row=1, col=1)
+    fig.update_xaxes(title_text="Principal component 1", range=[-4, 4], row=1, col=2)
+    fig.update_yaxes(title_text="Principal component 2", range=[-4, 4], row=1, col=2)
+    
+    st.plotly_chart(fig)
 
     u, l, v = np.linalg.svd(cov_data)
     theta_svd = math.atan(u[0][1] / u[0][0])
@@ -345,8 +342,7 @@ The new coordinate system from the PCA does not necessarily have physical proper
     plt.legend(loc="lower left")
     ax = plt.gca()
     ax.set_xticklabels(["Motorway", "", "Aggressive", "", "City", "", "Mild", ""])
-    plt.show()
-    st.pyplot()
+    st.pyplot(fig)
     
     st.markdown(""" ###
     ---
