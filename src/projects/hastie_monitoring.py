@@ -1,6 +1,4 @@
 import streamlit as st
-from dotenv import load_dotenv
-load_dotenv('local_credentials.env')
 from datetime import datetime, timedelta
 import time
 import boto3
@@ -12,6 +10,8 @@ import plotly.express as px
 import joblib
 import numpy as np
 from plotly import graph_objects as go
+from dotenv import load_dotenv
+load_dotenv('local_credentials.env')
 
 
 def dynamodb_to_dict(item):
@@ -88,8 +88,11 @@ def run():
         st.markdown("### No predictions made today")
         
     # Decision boundary learnt
-    df_train = pd.read_parquet('s3://hastie/preprocess/data/train.parquet')
-    df_test = pd.read_parquet('s3://hastie/preprocess/data/test.parquet')
+    download_file_from_s3('hastie', 'preprocess/data/train.parquet', 'train.parquet')
+    download_file_from_s3('hastie', 'preprocess/data/test.parquet', 'test.parquet')
+    
+    df_train = pd.read_parquet('train.parquet')
+    df_test = pd.read_parquet('test.parquet')
     
     download_file_from_s3('hastie', 'model/model.mdl', 'model.mdl')
     model = joblib.load('model.mdl')
