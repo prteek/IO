@@ -76,14 +76,17 @@ def run():
     date = datetime.now().strftime('%Y-%m-%d')
     data = get_data_from_dynamodb(date, table_name)
 
-    df = pd.DataFrame(data)[-20:]
-    df['is_correct'] = df['prediction'] == df['is_blue']
-    
-    fig = px.scatter(df, x='time', y='prediction', color='is_correct', 
-                     color_discrete_map={True:'#636EFA', False:'#EF553B'})
-    fig.update_layout({'title': 'Recent predictions'})
-    st.plotly_chart(fig)
-    
+    if len(data):
+        df = pd.DataFrame(data)[-20:]
+        df['is_correct'] = df['prediction'] == df['is_blue']
+
+        fig = px.scatter(df, x='time', y='prediction', color='is_correct', 
+                         color_discrete_map={True:'#636EFA', False:'#EF553B'})
+        fig.update_layout({'title': 'Recent predictions'})
+        st.plotly_chart(fig)
+    else:
+        st.markdown("### No predictions made today")
+        
     # Decision boundary learnt
     df_train = pd.read_parquet('s3://hastie/preprocess/data/train.parquet')
     df_test = pd.read_parquet('s3://hastie/preprocess/data/test.parquet')
@@ -135,14 +138,16 @@ def run():
     st.plotly_chart(fig)
     
     
-    fig = go.Figure()
+    if len(data):
+        fig = go.Figure()
     
-    fig.add_trace(go.Histogram(x=df_train['is_blue'], name='Training data', histnorm='percent'))
-    fig.add_trace(go.Histogram(x=df['prediction'], name='Predictions made', histnorm='percent'))
+        fig.add_trace(go.Histogram(x=df_train['is_blue'], name='Training data', histnorm='percent'))
+        fig.add_trace(go.Histogram(x=df['prediction'], name='Predictions made', histnorm='percent'))
     
-    fig.update_layout({'title':'Distribution of Target variable',
+        fig.update_layout({'title':'Distribution of Target variable',
                       'xaxis_title':'target variable value',
                       'yaxis_title':'% of total instances'})
-    st.plotly_chart(fig)
-
+        st.plotly_chart(fig)
+    else:
+        pass
     
