@@ -126,15 +126,15 @@ def run():
         col1, col2, col3 = st.columns(3)
         accuracy_train = mt.accuracy_score(y, model.predict(X))
         accuracy_predict = mt.accuracy_score(df['is_blue'], df['prediction'])
-        col1.metric("Accuracy of prediction", f"{round(accuracy_predict,2)}", delta=f"Delta  From train: {round(accuracy_predict - accuracy_train,2)}")
+        col1.metric("Accuracy of prediction", f"{round(accuracy_predict,2)}", delta=f"{round(accuracy_predict - accuracy_train,2)}: Delta from train")
         
         precision_train = mt.precision_score(y, model.predict(X))
         precision_predict = mt.precision_score(df['is_blue'], df['prediction'])
-        col2.metric("Precision of prediction", f"{round(precision_predict,2)}", delta=f"Delta  From train: {round(precision_predict - precision_train,2)}")
+        col2.metric("Precision of prediction", f"{round(precision_predict,2)}", delta=f"{round(precision_predict - precision_train,2)}: Delta from train")
         
         recall_train = mt.recall_score(y, model.predict(X))
         recall_predict = mt.recall_score(df['is_blue'], df['prediction'])
-        col3.metric("Recall of prediction", f"{round(recall_predict,2)}", delta=f"Delta  From train: {round(recall_predict - recall_train,2)}")
+        col3.metric("Recall of prediction", f"{round(recall_predict,2)}", delta=f"{round(recall_predict - recall_train,2)}: Delta from train")
         
         st.markdown("---")
     else:
