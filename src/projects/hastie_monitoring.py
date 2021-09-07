@@ -78,6 +78,8 @@ def run():
 
     if len(data):
         df = pd.DataFrame(data)[-20:]
+        df['time'] = pd.to_datetime(df['time'])        
+        
         df['is_correct'] = df['prediction'] == df['is_blue']
 
         fig = px.scatter(df, x='time', y='prediction', color='is_correct', 
