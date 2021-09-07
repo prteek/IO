@@ -23,9 +23,9 @@ def run():
     home = home_page()
     
     projects = {'Home':home,
+                'Hastie pipeline monitoring': hm,
                 'Determining number of samples for a study':snos,
                 'Drive cycle characterisation':dcc,
-                'Hastie pipeline monitoring': hm,
                 'Battery model parameter estimation':bmpe,
                 'COVID19 EDA and early stage model':ceap,
 #                 'Personal Polynomial':ppo,
