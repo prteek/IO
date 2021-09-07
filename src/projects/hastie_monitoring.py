@@ -176,7 +176,7 @@ def run():
     
     fig.update_layout({'title':f'Decision boundary learnt on {date}',
                       'xaxis_title':'x1',
-                      'yaxis_title':'y1'})
+                      'yaxis_title':'x2'})
     st.plotly_chart(fig)
     
     
