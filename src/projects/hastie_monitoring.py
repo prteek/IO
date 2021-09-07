@@ -7,6 +7,7 @@ import os
 from decimal import Decimal
 import pandas as pd
 import plotly.express as px
+from plotly.subplots import make_subplots
 import joblib
 import numpy as np
 from plotly import graph_objects as go
@@ -75,16 +76,33 @@ def run():
     # Recent predictions
     date = datetime.now().strftime('%Y-%m-%d')
     data = get_data_from_dynamodb(date, table_name)
-
+    
     if len(data):
-        df = pd.DataFrame(data)[-20:]
+        df = pd.DataFrame(data)[-30:]
         df['time'] = pd.to_datetime(df['time'])        
         
-        df['is_correct'] = df['prediction'] == df['is_blue']
-
-        fig = px.scatter(df, x='time', y='prediction', color='is_correct', 
-                         color_discrete_map={True:'#636EFA', False:'#EF553B'})
-        fig.update_layout({'title': 'Recent predictions'})
+        labels = ["Correctly predicted", "Incorrect"]
+        correct_prediction_label = {True: labels[0], False: labels[1]}
+        df['is_correct'] = [correct_prediction_label[i] for i in (df['prediction'] == df['is_blue'])]
+        fig = make_subplots(rows=1,cols=2,
+                            subplot_titles=["Recent Predictions", 
+                                            "Accuracy of predictions"],
+                            specs=[[{"type": "xy"}, {"type": "domain"}]],)
+            
+        fig.add_traces(px.scatter(df, x='time', y='prediction', color='is_correct', 
+                         color_discrete_map={labels[0]:'#636EFA', 
+                                             labels[1]:'#EF553B'}).data)
+        
+        percent_correct = (df['prediction'] == df['is_blue']).sum()/len(df)*100
+        fig.add_trace(
+            go.Pie(
+                values=np.round([percent_correct, 100-percent_correct], 1),
+                labels=labels,
+            ),
+            row=1,
+            col=2,
+        )
+        
         st.plotly_chart(fig)
     else:
         st.markdown("### No predictions made today")
