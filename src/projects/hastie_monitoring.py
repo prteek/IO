@@ -72,6 +72,8 @@ def run():
     Part of Hastie blob classification pipeline project [repo](https://github.com/prteek/ml-pipeline). 
 """)
     
+    st.sidebar.caption("Hastie AWS Pipeline")
+    st.sidebar.image("https://raw.githubusercontent.com/prteek/ml-pipeline/master/metadata/images/pipeline_graph.PNG")
     st.caption("The dashboard monitors performance of model that the pipeline re-trains everyday (on AWS Sagemaker) and uses to make predictions every 5 minutes")
     
     # Get model and training data
