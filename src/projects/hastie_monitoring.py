@@ -69,8 +69,10 @@ def run():
     st.title('Hastie pipeline monitoring')
     
     st.markdown("""
-    This is the monitoring Dashboard for Hastie blob classification pipeline [repo](https://github.com/prteek/ml-pipeline). 
+    Part of Hastie blob classification pipeline project [repo](https://github.com/prteek/ml-pipeline). 
 """)
+    
+    st.caption("The dashboard monitors performance of model that the pipeline re-trains everyday and uses to make predictions every 5 minutes")
     
     # Get model and training data
     download_file_from_s3('hastie', 'preprocess/data/train.parquet', 'train.parquet')
@@ -191,3 +193,11 @@ def run():
     else:
         pass
     
+    
+    
+    st.markdown(""" ###
+    ---
+    [Prateek](https://www.linkedin.com/in/prteek/ "LinkedIn")  
+    [Repository](https://github.com/prteek/IO/ "Github")
+
+    """)
