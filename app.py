@@ -40,8 +40,8 @@ If you'd like to get in touch, please use the details below:
 home = home_page()
     
 projects = {'Home':home,
-            'Chittr':bh,
             'Projects':ph,
+            'Chittr':bh,
            }
 
 
