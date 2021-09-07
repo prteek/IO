@@ -11,6 +11,7 @@ from plotly.subplots import make_subplots
 import joblib
 import numpy as np
 from plotly import graph_objects as go
+from sklearn import metrics as mt
 from dotenv import load_dotenv
 load_dotenv('local_credentials.env')
 
@@ -71,9 +72,24 @@ def run():
     This is the monitoring Dashboard for Hastie blob classification pipeline [repo](https://github.com/prteek/ml-pipeline). 
 """)
     
-    table_name = 'hastie'
+    # Get model and training data
+    download_file_from_s3('hastie', 'preprocess/data/train.parquet', 'train.parquet')
+    download_file_from_s3('hastie', 'preprocess/data/test.parquet', 'test.parquet')
+    
+    df_train = pd.read_parquet('train.parquet')
+    df_test = pd.read_parquet('test.parquet')
+    
+    download_file_from_s3('hastie', 'model/model.mdl', 'model.mdl')
+    model = joblib.load('model.mdl')
+    
+    predictors = ['x1', 'x2']
+    target = 'is_blue'
+    X = df_train[predictors].to_numpy()
+    y = df_train[target].values
+    
     
     # Recent predictions
+    table_name = 'hastie'
     date = datetime.now().strftime('%Y-%m-%d')
     data = get_data_from_dynamodb(date, table_name)
     
@@ -104,24 +120,25 @@ def run():
         )
         
         st.plotly_chart(fig)
+        
+        col1, col2, col3 = st.columns(3)
+        accuracy_train = mt.accuracy_score(y, model.predict(X))
+        accuracy_predict = mt.accuracy_score(df['is_blue'], df['prediction'])
+        col1.metric("Accuracy of prediction", f"{round(accuracy_predict,2)}", delta=f"Delta  From train: {round(accuracy_predict - accuracy_train,2)}")
+        
+        precision_train = mt.precision_score(y, model.predict(X))
+        precision_predict = mt.precision_score(df['is_blue'], df['prediction'])
+        col2.metric("Precision of prediction", f"{round(precision_predict,2)}", delta=f"Delta  From train: {round(precision_predict - precision_train,2)}")
+        
+        recall_train = mt.recall_score(y, model.predict(X))
+        recall_predict = mt.recall_score(df['is_blue'], df['prediction'])
+        col3.metric("Recall of prediction", f"{round(recall_predict,2)}", delta=f"Delta  From train: {round(recall_predict - recall_train,2)}")
+        
+        st.markdown("---")
     else:
         st.markdown("### No predictions made today")
         
-    # Decision boundary learnt
-    download_file_from_s3('hastie', 'preprocess/data/train.parquet', 'train.parquet')
-    download_file_from_s3('hastie', 'preprocess/data/test.parquet', 'test.parquet')
-    
-    df_train = pd.read_parquet('train.parquet')
-    df_test = pd.read_parquet('test.parquet')
-    
-    download_file_from_s3('hastie', 'model/model.mdl', 'model.mdl')
-    model = joblib.load('model.mdl')
-    
-    predictors = ['x1', 'x2']
-    target = 'is_blue'
-    X = df_train[predictors].to_numpy()
-    y = df_train[target].values
-    
+    # Decision boundary learnt    
     # Create a mesh grid on which we will run our model
     mesh_size = .1
     margin = 0
