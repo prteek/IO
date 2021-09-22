@@ -6,7 +6,7 @@ from src.projects import coronavirus_eda_and_prediction as ceap
 from src.projects import drive_cycle_characterisation as dcc
 from src.projects import raspberry_pi_stats as rpis
 from src.projects import hastie_monitoring as hm
-from src.projects import flicker_analysis as fa
+from src.projects import flickr_analysis as fa
 
 def run():
     
