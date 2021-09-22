@@ -6,6 +6,7 @@ from src.projects import coronavirus_eda_and_prediction as ceap
 from src.projects import drive_cycle_characterisation as dcc
 from src.projects import raspberry_pi_stats as rpis
 from src.projects import hastie_monitoring as hm
+from src.projects import flicker_analysis as fa
 
 def run():
     
@@ -28,6 +29,7 @@ def run():
                 'Drive cycle characterisation':dcc,
                 'Battery model parameter estimation':bmpe,
                 'COVID19 EDA and early stage model':ceap,
+                'Flickr analysis':fa,
 #                 'Personal Polynomial':ppo,
 #                 'Raspberry Pi Stats dashboard':rpis,
                }
