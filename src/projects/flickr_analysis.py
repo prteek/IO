@@ -83,9 +83,9 @@ def run():
         
     # get photos for user
     user = 'june1777'
-    filename = 'june1777.json'
+    filename = 'src/projects/docs/june1777.json'
     download_user_photos_exif_pipeline.set_params(**{'functiontransformer-3__kw_args':
-                                                     {'filename':'june1777.json'}})
+                                                     {'filename':filename}})
 
     if os.path.exists(filename): # file exists do nothing
         pass 
