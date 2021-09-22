@@ -95,7 +95,7 @@ def run():
     # load data as dataframe
     photos_df = pd.read_json(filename, orient='index')
 
-    """### Let's see what kind of camera models were used"""
+    st.markdown("""### Let's see what kind of camera models were used""")
     fig = (alt
            .Chart(photos_df
                   .value_counts(subset=['Model'], normalize=True)
@@ -107,30 +107,30 @@ def run():
           )
            
     st.altair_chart(fig, use_container_width=True)
-    """32% with a Canon EOS 5D  
-    24% with a Contax N Digital  
-    14% with a Sony A7 MK2  
-    He also used Nex-3 for a bit  
-    Also worth noting about 8% of his photos were film scans.
-    """
+    st.markdown("""32% with a Canon EOS 5D  
+24% with a Contax N Digital  
+14% with a Sony A7 MK2  
+He also used Nex-3 for a bit  
+Also worth noting about 8% of his photos were film scans.
+    """)
     
-    "#"
-    """### Let's take only digital photos and drop the ones that are from Fujifilm scanner 'SP-3000' which won't have any exif data"""
+    st.markdown("#")
+    st.markdown("""### Let's take only digital photos and drop the ones that are from Fujifilm scanner 'SP-3000' which won't have any exif data""")
     
     scanners = ['SP-3000','QSS']
     digi_photos_df = photos_df.loc[-photos_df['Model'].isin(scanners)]
     
-    f"""Checking the shape of digital photots DataFrame:{digi_photos_df.shape}.  
-The number of columns is way high for us to make any sense of it. Let’s see if we can filter columns with at least 70% non empty values"""
+    st.markdown(f"""Checking the shape of digital photots DataFrame:{digi_photos_df.shape}.  
+The number of columns is way high for us to make any sense of it. Let’s see if we can filter columns with at least 70% non empty values""")
 
     digi_photos_df = digi_photos_df.loc[:, digi_photos_df.notnull().mean().sort_values(ascending=True) > 0.7]
     
     st.write(f"Number of columns after filtering: {digi_photos_df.shape[1]}")
-    """### Let's also check the ```Make``` of the models"""
+    st.markdown("""### Let's also check the ```Make``` of the models""")
     st.table(digi_photos_df.value_counts(subset=['Make', 'Model']).to_frame(name='Count').reset_index())
 
-    "#"
-    """### Which ISO values are most common ?"""
+    st.markdown("#")
+    st.markdown("""### Which ISO values are most common ?""")
     
     col1,col2 = st.columns((1,2))
     fig = (alt
@@ -143,7 +143,7 @@ The number of columns is way high for us to make any sense of it. Let’s see if
     
     col1.altair_chart(fig, use_container_width=True)
 
-    """ ISO values are logarithmic in nature so this doesn't give us much insight directly, so we need to take log of these values """
+    st.markdown(""" ISO values are logarithmic in nature so this doesn't give us much insight directly, so we need to take log of these values """)
     
     log_df = (digi_photos_df
               .assign(LogISO=np.log(digi_photos_df['ISO']))
@@ -164,7 +164,7 @@ The number of columns is way high for us to make any sense of it. Let’s see if
     
     col2.altair_chart(fig, use_container_width=True)
     
-    """Using 2nd chart it is clear that 1600 is the most common ISO setting which makes sense since these photos are shot in the evening hours"""
+    st.markdown("""Using 2nd chart it is clear that 1600 is the most common ISO setting which makes sense since these photos are shot in the evening hours""")
 
 
 
