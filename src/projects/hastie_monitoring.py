@@ -72,6 +72,8 @@ def run():
     Part of Hastie blob classification pipeline project [repo](https://github.com/prteek/ml-pipeline). 
 """)
     
+    st.sidebar.caption("Hastie AWS Pipeline")
+    st.sidebar.image("https://raw.githubusercontent.com/prteek/ml-pipeline/master/metadata/images/pipeline_graph.PNG")
     st.caption("The dashboard monitors performance of model that the pipeline re-trains everyday (on AWS Sagemaker) and uses to make predictions every 5 minutes")
     
     # Get model and training data
@@ -126,15 +128,15 @@ def run():
         col1, col2, col3 = st.columns(3)
         accuracy_train = mt.accuracy_score(y, model.predict(X))
         accuracy_predict = mt.accuracy_score(df['is_blue'], df['prediction'])
-        col1.metric("Accuracy of prediction", f"{round(accuracy_predict,2)}", delta=f"Delta  From train: {round(accuracy_predict - accuracy_train,2)}")
+        col1.metric("Accuracy of prediction", f"{round(accuracy_predict,2)}", delta=f"{round(accuracy_predict - accuracy_train,2)}: Delta from train")
         
         precision_train = mt.precision_score(y, model.predict(X))
         precision_predict = mt.precision_score(df['is_blue'], df['prediction'])
-        col2.metric("Precision of prediction", f"{round(precision_predict,2)}", delta=f"Delta  From train: {round(precision_predict - precision_train,2)}")
+        col2.metric("Precision of prediction", f"{round(precision_predict,2)}", delta=f"{round(precision_predict - precision_train,2)}: Delta from train")
         
         recall_train = mt.recall_score(y, model.predict(X))
         recall_predict = mt.recall_score(df['is_blue'], df['prediction'])
-        col3.metric("Recall of prediction", f"{round(recall_predict,2)}", delta=f"Delta  From train: {round(recall_predict - recall_train,2)}")
+        col3.metric("Recall of prediction", f"{round(recall_predict,2)}", delta=f"{round(recall_predict - recall_train,2)}: Delta from train")
         
         st.markdown("---")
     else:
@@ -176,7 +178,7 @@ def run():
     
     fig.update_layout({'title':f'Decision boundary learnt on {date}',
                       'xaxis_title':'x1',
-                      'yaxis_title':'y1'})
+                      'yaxis_title':'x2'})
     st.plotly_chart(fig)
     
     
