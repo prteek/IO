@@ -23,6 +23,7 @@ seaborn
 matplotlib
 plotly
 streamlit
+altair
 
 ## ML
 scikit-learn
@@ -37,3 +38,7 @@ opencv-python
 
 ## AWS
 boto3
+
+
+## flickr
+flickr_api
