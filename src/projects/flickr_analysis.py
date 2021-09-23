@@ -4,7 +4,6 @@ import os
 import json
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import FunctionTransformer as FT
-import seaborn as sns
 from functools import partial
 from dotenv import load_dotenv
 load_dotenv('local_credentials.env')
@@ -12,7 +11,6 @@ import logging
 import streamlit as st
 import altair as alt
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 logging.basicConfig(
@@ -167,13 +165,36 @@ The number of columns is way high for us to make any sense of it. Let’s see if
     
     st.markdown("""Using 2nd chart it is clear that 1600 is the most common ISO setting which makes sense since these photos are shot in the evening hours""")
     
+    fig = (alt
+           .Chart(digi_photos_df
+                 .assign(iso_max = lambda x: pd.cut(x['ISO'], bins=[0,400,800,1200,1600,2000, 50000], 
+                                          labels=[400, 800,1200,1600,2000, 50000]),
+                        aperture_max = lambda x: pd.cut(x['MaxApertureValue'], bins=[0,2,4,6,20], 
+                                          labels=[2,4,6,20]))
+                 .groupby(['iso_max', 'aperture_max'])
+                 .agg('count')
+                 .reset_index()
+                 .rename(columns={'ISO':'count'})
+                 )
+           .mark_rect()
+           .encode(x='iso_max:O', y='aperture_max:O', color='count:Q', tooltip=['count:Q', 'iso_max:Q', 'aperture_max:Q'])
+           .interactive()
+          )
     
-    fig = sns.jointplot(data=digi_photos_df, 
-                        x="ISO", 
-                        y="MaxApertureValue", 
-                        log_scale=(True, False), kind='kde', height=5)
-    plt.grid()
-    st.pyplot(fig, use_container_width=True)
+#     fig = (alt
+#            .Chart(digi_photos_df
+#                      .groupby(['ISO', 'MaxApertureValue'])
+#                      .agg('count')
+#                      .reset_index()
+#                      .rename(columns={'Make':'count'})
+#                      )
+#            .mark_rect()
+#            .encode(x='ISO:O', y='MaxApertureValue:O', color='count:Q', tooltip=['count:Q', 'ISO:Q', 'MaxApertureValue:Q'])
+#           )
+                     
+                     
+    
+    st.altair_chart(fig, use_container_width=True)
     
     st.markdown("""Looking at the ISO together with Aperture value also highlights the fact that he has composed shots to let in more light at higher ISO and wide open apertures.""")
 
