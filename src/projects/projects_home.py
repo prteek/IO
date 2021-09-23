@@ -25,11 +25,11 @@ def run():
     
     projects = {'Home':home,
                 'Hastie pipeline monitoring': hm,
+                'Flickr analysis':fa,
                 'Determining number of samples for a study':snos,
                 'Drive cycle characterisation':dcc,
                 'Battery model parameter estimation':bmpe,
                 'COVID19 EDA and early stage model':ceap,
-                'Flickr analysis':fa,
 #                 'Personal Polynomial':ppo,
 #                 'Raspberry Pi Stats dashboard':rpis,
                }
