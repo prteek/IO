@@ -170,8 +170,8 @@ The number of columns is way high for us to make any sense of it. Let’s see if
     fig = sns.jointplot(data=digi_photos_df, 
                         x="ISO", 
                         y="MaxApertureValue", 
-                        log_scale=(True, False), kind='kde')
-    
+                        log_scale=(True, False), kind='kde', height=5)
+    plt.grid()
     st.pyplot(fig, use_container_width=True)
     
     st.markdown("""Looking at the ISO together with Aperture value also highlights the fact that he has composed shots to let in more light at higher ISO and wide open apertures.""")
