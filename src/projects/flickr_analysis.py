@@ -165,6 +165,16 @@ The number of columns is way high for us to make any sense of it. Let’s see if
     col2.altair_chart(fig, use_container_width=True)
     
     st.markdown("""Using 2nd chart it is clear that 1600 is the most common ISO setting which makes sense since these photos are shot in the evening hours""")
+    
+    
+    fig = sns.jointplot(data=digi_photos_df, 
+                        x="ISO", 
+                        y="MaxApertureValue", 
+                        log_scale=(True, False), kind='kde')
+    
+    st.pyplot(fig, use_container_width=True)
+    
+    st.markdown("""Looking at the ISO together with Aperture value also highlights the fact that he has composed shots to let in more light at higher ISO and wide open apertures.""")
 
 
 
