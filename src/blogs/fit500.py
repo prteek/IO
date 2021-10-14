@@ -43,33 +43,41 @@ from sklearn.datasets import make_regression
     st.subheader("Objective")
     st.markdown("""What we're trying to do here is fit a linear regression model on 500 different datasets with 50 features each and each feature has 1000 data points.In total that is 25 million data points.
 However, the goal is that each dataset should end up with its own set of model parameters and we want to this is GPU so we would like to avoid any loops.
-It so happens that linear algebra helps us express the problem in a way that these 25 million data points can all be treated together and the model fit with just one line of code followg the familiar formulation for regression problems ```Y = X . Theta```
+It so happens that linear algebra helps us express the problem in a way that these 25 million data points can all be treated together and the model fit with just one line of code following the familiar formulation for regression problems ```Y = X . theta```
 """)
     st.markdown("##### Create data")
     
-    create_data = """n_groups=500
-n_samples = 1000
-n_features = 50
-Y = np.empty((n_samples,))
-X = np.empty((n_samples,))
-for i in range(n_groups):
+    create_data = """n_datasets=500  # number of different datasets, consider each dataset as an excel table if you will
+n_samples = 1000 # number of data points in each dataset i.e. number of rows in each excel table
+n_features = 50 # number of features in each dataset i.e. number of columns in each excel table
+
+Y = np.empty((n_samples,)) # Dependent variable (target) 
+X = np.empty((n_samples,)) # Independent variables (predictors)
+
+for i in range(n_datasets): # iterate once for each dataset 
+    # Create dummy regression data i.e. a table for each dataset
     x,y = make_regression(n_samples=n_samples, 
                           n_features=n_features, 
                           n_informative=n_features)
-    Y = np.c_[Y,y]
+                  
+    # Join all the tables along their columns to create a master table
+    Y = np.c_[Y,y] 
     X = np.c_[X,x]
 
-X = X[:,1:]
-Y = Y[:,1:]
+X = X[:,1:] # Since we initialised Independent variables with an empty array drop the first column
+Y = Y[:,1:] # Since we initialised dependent variable with an empty array drop the first column
+
+# Up until now the data had been in CPU memory now we can transfer all the data to GPU memory (using Cupy) to leverage GPU computing
 Xcd = cp.asarray(X)
 Ycd = cp.asarray(Y)
+
 """
     st.code(create_data, language='python')
     
 
     st.subheader("Now for the good part")
     st.markdown("""We can fit the model with just one line of code here and although it may look simple and familiar it's good to keep a note of how ```theta``` would be shaped here and how does it ensure we have separate model parameters for each dataset (group)""")
-    fit_models = """theta = cp.dot(cp.linalg.pinv(Xcd),Ycd)
+    fit_models = """theta = cp.dot(cp.linalg.pinv(Xcd),Ycd) # This is the closed form solution for linear regression 
 theta.shape
 (25000,500) """
     st.code(fit_models, language='python')
@@ -85,9 +93,9 @@ The data set we've used is big but is by no means huge for a typical data scienc
     
     
     st.subheader("Notes")
-    st.markdown("""1. ```Theta``` is a non square matrix of (n_groups*n_features) x n_groups. Each column **j** in theta, we will have zeros (very small values) correspoding to columns of X that do not contribute to the predictions of group **j**  
+    st.markdown("""1. ```Theta``` is a non square matrix of (n_datasets*n_features) x n_datasets. Each column **j** in theta, we will have zeros (very small values) correspoding to columns of X that do not contribute to the predictions of group **j**  
 2. We use pinv and not inv(Xcd.T@Xcd) since memory allocation for Xcd.T@X will be huge so this approach is more efficient  
-3. An alternate formulation can be where **X** is designed to be (n_groups x n_samples x n_features) matrix and treating the problem as solving for tensors
+3. An alternate formulation can be where **X** is designed to be (n_datasets x n_samples x n_features) matrix and treating the problem as solving for tensors
 
 """)
     
