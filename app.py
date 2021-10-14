@@ -41,7 +41,7 @@ home = home_page()
     
 projects = {'Home':home,
             'Projects':ph,
-            'Chittr':bh,
+            'Blog':bh,
            }
 
 

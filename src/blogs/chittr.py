@@ -3,10 +3,19 @@ def run():
     st.title("Chittr")    
     st.markdown("""##""")
     
+    #8
+    st.markdown("""On AGI (artificial general intelligence): we may be able to create something in next couple of decades, but it would probably be an engineering solution not a self concious system perhaps. It's much harder to create 'conciousness' because there are parts of conciousness that we don't understand, there are parts of which we don't know. We can create what we don't know, even if it is created somehow, we can't evaluate it for the same reason.  
+### So we may have something which is like Hi res Audio. Something that is indistinguishable for human judgement but isn't really concious so to say.    
 
+--- 
+""")
+    
+    
+    
     #7
-    st.markdown("""Seems like to generalise models currently we are trying to overfit on the universal data using billions of parameters.
-    Does trying to learn universe like this truly mean *general intelligence* ? 
+    st.markdown("""Seems like to generalise models currently we are trying to `overfit` on the universal data 
+using billions of parameters.
+Does trying to learn universe like this truly mean *general intelligence* ? 
     
 --- 
 """)

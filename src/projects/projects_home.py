@@ -6,7 +6,6 @@ from src.projects import coronavirus_eda_and_prediction as ceap
 from src.projects import drive_cycle_characterisation as dcc
 from src.projects import raspberry_pi_stats as rpis
 from src.projects import hastie_monitoring as hm
-from src.projects import flickr_analysis as fa
 
 def run():
     
@@ -25,7 +24,6 @@ def run():
     
     projects = {'Home':home,
                 'Hastie pipeline monitoring': hm,
-                'Flickr analysis':fa,
                 'Determining number of samples for a study':snos,
                 'Drive cycle characterisation':dcc,
                 'Battery model parameter estimation':bmpe,
