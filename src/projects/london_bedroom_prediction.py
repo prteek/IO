@@ -9,7 +9,7 @@ More description of the problem and the notebook where actual analysis is perfor
     
     st.markdown("""## Data exploration""")
 
-    df = pd.read_csv('src/projects/home_search.data')
+    df = pd.read_csv('https://raw.githubusercontent.com/prteek/bedroom-prediction/main/home_search.data')
     dfna = df.isna().sum().reset_index().iloc[1:]
     dfna[0] = df.shape[0] - dfna[0]
     dfna.columns = ['Column', 'Non-Null Count']
