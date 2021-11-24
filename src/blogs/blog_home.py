@@ -9,7 +9,7 @@ def run():
     
     projects = {'Home':chit,
                'Fit 500 models on GPU':fit500,
-               'Problem solving with GPU':pswg,
+               # 'Problem solving with GPU':pswg,
                'Flickr analysis':fa}
 
     page = st.sidebar.selectbox(label='Blogs', options=list(projects.keys()))
