@@ -7,6 +7,8 @@ from src.projects import drive_cycle_characterisation as dcc
 from src.projects import raspberry_pi_stats as rpis
 from src.projects import hastie_monitoring as hm
 from src.projects import london_bedroom_prediction as lbp
+from src.projects import strava_suffer_score as sss
+
 
 def run():
     
@@ -24,6 +26,7 @@ def run():
     home = home_page()
     
     projects = {'Home':home,
+                'Strava suffer score prediction':sss,
                 'Hastie pipeline monitoring': hm,
                 'London bedroom prediction':lbp,
                 'Determining number of samples for a study':snos,
