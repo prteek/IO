@@ -2,7 +2,6 @@ import streamlit as st
 from src.projects import simulating_number_of_samples as snos
 from src.projects import battery_model_parameter_estimation as bmpe
 from src.projects import personal_polynomial as ppo
-from src.projects import coronavirus_eda_and_prediction as ceap
 from src.projects import drive_cycle_characterisation as dcc
 from src.projects import raspberry_pi_stats as rpis
 from src.projects import hastie_monitoring as hm
@@ -27,12 +26,11 @@ def run():
     
     projects = {'Home':home,
                 'Strava suffer score prediction':sss,
-                'Hastie pipeline monitoring': hm,
-                'London bedroom prediction':lbp,
-                'Determining number of samples for a study':snos,
+                # 'Hastie pipeline monitoring': hm,
+                # 'London bedroom prediction':lbp,
+                # 'Determining number of samples for a study':snos,
                 'Drive cycle characterisation':dcc,
-                'Battery model parameter estimation':bmpe,
-                'COVID19 EDA and early stage model':ceap,
+                # 'Battery model parameter estimation':bmpe,
 #                 'Personal Polynomial':ppo,
 #                 'Raspberry Pi Stats dashboard':rpis,
                }
