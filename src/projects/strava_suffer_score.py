@@ -42,12 +42,16 @@ train_date = "2023-04-01"
 def run():
     st.title('Strava suffer score prediction')
     st.markdown("""
-    Part of Strava suffer score pipeline project [repo](https://github.com/prteek/strava-project). 
+    Part of Strava suffer score pipeline project [repo](https://github.com/prteek/strava-project).
 """)
 
     st.sidebar.caption("Strava pipeline")
     st.sidebar.image("https://raw.githubusercontent.com/prteek/strava-project/main/resources/strava.png")
-    st.caption("The dashboard monitors performance of model that the pipeline re-trains week (on AWS Sagemaker) and uses to make predictions for each workout")
+    st.caption("""The dashboard monitors performance of model that the pipeline re-trains week (on AWS Sagemaker) and uses to make predictions for each workout.  
+    This project started out as my curiosity to model my health data. After looking at fascinating stats from Strava app,
+    I decided to model ```Suffer Score``` assigned to each workout by Strava. This being a paid feature could mean that if I
+    model it well, I may actually end up saving money and so far it's going well.
+    """)
 
     # Get model and training data
     df_train = wr.s3.read_csv(os.path.join("s3://", bucket, "prepare-training-data", "output", "train.csv"),
