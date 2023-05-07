@@ -38,6 +38,8 @@ opencv-python
 
 ## AWS
 boto3
+awswrangler
+sagemaker
 
 
 ## flickr
