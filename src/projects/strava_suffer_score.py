@@ -116,18 +116,27 @@ def run():
 
     st.subheader("Suffer score relationship")
     fig = go.Figure()
-    fig.add_scatter(x=np.round(X[:,0]/60,1), y=y, mode='markers', name='Training data')
+    fig.add_scatter(x=np.round(X[:,0]/60,1), y=X[:,1], text=np.round(y_pred,0),
+                    textfont=dict(color='yellow'),
+                    mode="markers+text",
+                    textposition="bottom center",
+                    name='Training data')
     fig.update_layout({'xaxis': {'title': 'Moving time (minutes)'},
-                       'yaxis': {'title': 'Suffer score'}},
-                       title="Suffer score vs moving time")
+                       'yaxis': {'title': 'Average heart rate'}},
+                       title="Effect of heart rate and moving time on suffer score")
 
-    st.plotly_chart(fig)
-
-    fig = go.Figure()
-    fig.add_scatter(x=X[:,1], y=y, mode='markers', name='Training data')
-    fig.update_layout({'xaxis': {'title': 'Average heart rate'},
-                          'yaxis': {'title': 'Suffer score'}},
-                            title="Suffer score vs average heart rate")
+    mov_time_vec = np.arange(0,65,5)*60
+    avg_hr_vec = np.arange(50,200,20)
+    xv, yv = np.meshgrid(mov_time_vec, avg_hr_vec)
+    X_ = np.c_[xv.ravel(), yv.ravel()]
+    y_mesh = np.array(eval(predictor.predict(X_).decode()), dtype=float).reshape(xv.shape)
+    fig.add_trace(go.Contour(x=np.round(mov_time_vec/60,1), y=avg_hr_vec, z=y_mesh,
+                             colorscale='Hot',
+                             contours=dict(
+                                 start=0,
+                                 end=115,
+                                 size=5,
+                             )))
 
     st.plotly_chart(fig)
 
