@@ -131,6 +131,23 @@ def run():
 
     st.plotly_chart(fig)
 
+    st.markdown("---")
+
+    st.subheader("Suffer score calculator")
+    mov_time = st.text_input("Moving time (minutes)", value=20)
+    avg_hr = st.text_input("Average heart rate", value=150)
+    go_calc = st.button("Calculate")
+
+    if go_calc:
+        X_manual = [[mov_time, avg_hr]]
+        y_pred = eval(predictor.predict(X_manual).decode())[0]
+        st.metric("Suffer score", f"{round(y_pred,1)}")
+
+    st.markdown("---")
+
+
+
+
 
 
 
