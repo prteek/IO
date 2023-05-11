@@ -148,7 +148,7 @@ def run():
     go_calc = st.button("Calculate")
 
     if go_calc:
-        X_manual = [[mov_time, avg_hr]]
+        X_manual = [[mov_time*60, avg_hr]]
         y_pred = eval(predictor.predict(X_manual).decode())[0]
         st.metric("Suffer score", f"{round(y_pred,1)}")
 
