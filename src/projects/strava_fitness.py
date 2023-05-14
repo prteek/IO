@@ -96,7 +96,7 @@ def run():
     extend_in_future = [days_from_today_1, days_from_today_2, days_from_today_3]
     future_dates_ = np.array([np.datetime64("today") + np.timedelta64(i, 'D') for i in extend_in_future])
     future_dates = np.c_[future_dates_,future_dates_].ravel()
-    future_fitness = np.array([fitness_score_1, fitness_score_2, fitness_score_3]).ravel()
+    future_fitness = np.round(np.array([fitness_score_1, fitness_score_2, fitness_score_3]).ravel(),2)
 
     fig.add_scatter(x=future_dates,
                     y=future_fitness,
