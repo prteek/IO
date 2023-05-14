@@ -32,7 +32,7 @@ train_date = "2023-04-01"
 def run():
     st.title('Strava suffer score prediction')
     st.markdown("""
-    Part of Strava suffer score pipeline project [repo](https://github.com/prteek/strava-project).
+    Part of Strava metrics modelling project [repo](https://github.com/prteek/strava-project).
 """)
 
     st.sidebar.caption("Strava pipeline")
