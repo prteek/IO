@@ -28,6 +28,25 @@ model_name = predictor._get_model_names()[0]
 train_date = sm_client.describe_model(ModelName=model_name)["CreationTime"].strftime("%Y-%m-%d")
 train_date = "2023-04-01"
 
+@st.cache_data
+def fetch_training_data():
+    df = wr.s3.read_csv(os.path.join("s3://", bucket, "prepare-training-data", "output", "train.csv"),
+                   boto3_session=boto3_session)
+    return df
+
+
+@st.cache_data
+def fetch_recent_predictions(train_date):
+    df = wr.athena.read_sql_query(f"""
+                    SELECT * FROM strava.predicted_suffer_score
+                    JOIN strava.activities
+                    ON strava.predicted_suffer_score.activity_id = strava.activities.id
+                    WHERE start_timestamp >= date('{train_date}')
+                    """,
+                             database=DB,
+                             boto3_session=boto3_session)
+    return df
+
 
 def run():
     st.title('Strava suffer score prediction')
@@ -44,22 +63,14 @@ def run():
     """)
 
     # Get model and training data
-    df_train = wr.s3.read_csv(os.path.join("s3://", bucket, "prepare-training-data", "output", "train.csv"),
-                              boto3_session=boto3_session)
+    df_train = fetch_training_data()
 
     X = df_train[PREDICTORS].values
     y = df_train[TARGET].values
     y_pred = np.array(eval(predictor.predict(X).decode()), dtype=float)
 
     # Recent predictions
-    data = wr.athena.read_sql_query(f"""
-                    SELECT * FROM strava.predicted_suffer_score
-                    JOIN strava.activities
-                    ON strava.predicted_suffer_score.activity_id = strava.activities.id
-                    WHERE start_timestamp >= date('{train_date}')
-                    """,
-            database=DB,
-            boto3_session=boto3_session)
+    data = fetch_recent_predictions(train_date)
 
     fig = make_subplots(rows=1, cols=2,
                         subplot_titles=("Predicted vs actual suffer score",
