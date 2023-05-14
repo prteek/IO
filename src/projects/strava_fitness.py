@@ -22,9 +22,9 @@ predictor_fitness = Predictor("strava-fitness", serializer=CSVSerializer())
 
 
 @st.cache_data
-def fetch_fitness_data():
+def fetch_fitness_data(date_end="2021-04-01"):
     data = wr.athena.read_sql_query(f"""
-                    SELECT * FROM strava.predicted_fitness_score""",
+                    SELECT * FROM strava.predicted_fitness_score WHERE start_timestamp <= date('{date_end}')""",
                                     database=DB,
                                     boto3_session=boto3_session).sort_values("start_timestamp")
 
@@ -40,7 +40,8 @@ def run():
     st.sidebar.caption("Strava Fitness modelling")
 
     # Get fitness data
-    df_fitness = fetch_fitness_data()
+    date_today = np.datetime64("today").astype(str)
+    df_fitness = fetch_fitness_data(date_today)
     fitness_scores = df_fitness[["fitness_score_pre", "fitness_score"]].values.ravel()
     start_dates = df_fitness[["start_timestamp", "start_timestamp"]].values.ravel()
     fig = go.Figure()
