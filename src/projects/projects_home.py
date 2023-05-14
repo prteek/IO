@@ -7,6 +7,7 @@ from src.projects import raspberry_pi_stats as rpis
 from src.projects import hastie_monitoring as hm
 from src.projects import london_bedroom_prediction as lbp
 from src.projects import strava_suffer_score as sss
+from src.projects import strava_fitness as sf
 
 
 def run():
@@ -26,6 +27,7 @@ def run():
     
     projects = {'Home':home,
                 'Strava suffer score prediction':sss,
+                'Strava fitness simulator':sf,
                 # 'Hastie pipeline monitoring': hm,
                 # 'London bedroom prediction':lbp,
                 # 'Determining number of samples for a study':snos,
