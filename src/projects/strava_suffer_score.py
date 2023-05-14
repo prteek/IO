@@ -1,23 +1,13 @@
 import streamlit as st
-from datetime import datetime, timedelta
-import time
 import boto3
-from boto3.dynamodb.conditions import Key
 import os
-from decimal import Decimal
-import pandas as pd
-import plotly.express as px
 from plotly.subplots import make_subplots
-import joblib
 import numpy as np
 from plotly import graph_objects as go
 from sklearn import metrics as mt
-from dotenv import load_dotenv
 import awswrangler as wr
 from sagemaker.predictor import Predictor
 from sagemaker.serializers import CSVSerializer
-from sagemaker.model import Model
-
 
 expected_error = lambda y_true, y_predicted: np.mean(y_predicted-y_true)
 boto3_session = boto3.Session(region_name="eu-west-1")
