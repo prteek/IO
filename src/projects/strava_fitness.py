@@ -53,45 +53,47 @@ def run():
                     line=dict(color='gray', dash="dot"))
 
     # Add vertical line on plot indicating today's date
-    fig.add_scatter(x=[np.datetime64("today"), np.datetime64("today")],
+    fig.add_scatter(x=[np.datetime64("now"), np.datetime64("now")],
                     y=[0,15], mode="lines", line=dict(color="yellow", width=1, dash="dot"), name="Today")
 
     ini = df_fitness['fitness_score'].values[-1]
+    last_date = df_fitness['start_timestamp'].values[-1]
+    days_since_last_workout = np.timedelta64(np.datetime64("now") - last_date, 'D').astype(int)
     st.subheader("Fitness simulator")
     st.caption("Workout 1")
     col1, col2, col3, col4 = st.columns(4)
-    days_from_today_1 = int(col1.text_input("Days from today", value=2, key=11))
+    days_from_last_workout_1 = int(col1.text_input("Days from last workout", value=days_since_last_workout, key=11))
     mov_time = col2.text_input("Moving time (minutes)", value=0, key=12)
     avg_hr = col3.text_input("Average heart rate", value=0, key=13)
     payload_ss = [[float(mov_time)*60, float(avg_hr)]]
     suffer_score_1 = eval(predictor_suffer_score.predict(payload_ss).decode())[0]
-    payload_fitness = [[ini, float(days_from_today_1), suffer_score_1]]
+    payload_fitness = [[ini, float(days_from_last_workout_1), suffer_score_1]]
     fitness_score_1 = eval(predictor_fitness.predict(payload_fitness).decode())[0]
     col4.metric("Predicted suffer score", round(suffer_score_1, 0))
 
     st.caption("Workout 2")
     col1, col2, col3, col4 = st.columns(4)
-    days_from_today_2 = int(col1.text_input("Days from today", value=days_from_today_1+2, key=21))
+    days_from_last_workout_2 = int(col1.text_input("Days from last workout", value=days_from_last_workout_1+2, key=21))
     mov_time = col2.text_input("Moving time (minutes)", value=0, key=22)
     avg_hr = col3.text_input("Average heart rate", value=0, key=23)
     payload_ss = [[float(mov_time)*60, float(avg_hr)]]
     suffer_score_2 = eval(predictor_suffer_score.predict(payload_ss).decode())[0]
-    payload_fitness = [[fitness_score_1[1], int(days_from_today_2) - int(days_from_today_1), suffer_score_2]]
+    payload_fitness = [[fitness_score_1[1], int(days_from_last_workout_2) - int(days_from_last_workout_1), suffer_score_2]]
     fitness_score_2 = eval(predictor_fitness.predict(payload_fitness).decode())[0]
     col4.metric("Predicted suffer score", round(suffer_score_2, 0))
 
     st.caption("Workout 2")
     col1, col2, col3, col4 = st.columns(4)
-    days_from_today_3 = int(col1.text_input("Days from today", value=days_from_today_2+2, key=31))
+    days_from_last_workout_3 = int(col1.text_input("Days from last workout", value=days_from_last_workout_2+2, key=31))
     mov_time = col2.text_input("Moving time (minutes)", value=0, key=32)
     avg_hr = col3.text_input("Average heart rate", value=0, key=33)
     payload_ss = [[float(mov_time)*60, float(avg_hr)]]
     suffer_score_3 = eval(predictor_suffer_score.predict(payload_ss).decode())[0]
-    payload_fitness = [[fitness_score_2[1], int(days_from_today_3) - int(days_from_today_2), suffer_score_3]]
+    payload_fitness = [[fitness_score_2[1], int(days_from_last_workout_3) - int(days_from_last_workout_2), suffer_score_3]]
     fitness_score_3 = eval(predictor_fitness.predict(payload_fitness).decode())[0]
     col4.metric("Predicted suffer score", round(suffer_score_3, 0))
 
-    extend_in_future = [days_from_today_1, days_from_today_2, days_from_today_3]
+    extend_in_future = [days_from_last_workout_1, days_from_last_workout_2, days_from_last_workout_3]
     future_dates_ = np.array([np.datetime64("today") + np.timedelta64(i, 'D') for i in extend_in_future])
     future_dates = np.c_[future_dates_,future_dates_].ravel()
     future_fitness = np.array([fitness_score_1, fitness_score_2, fitness_score_3]).ravel()
