@@ -13,8 +13,8 @@ class home_page():
         st.title('IO')
         st.write("""Hi ! I am your just another friendly neighbourhood Data-Scientist.  
 Similar to your other friendly neighbourhood costumed crusaders, I believe that "with great power comes great responsibility".  
-So I rely on sound logic and principles of physics and math for designing and analysing stuff that matter.  
-In the past I have worked with Automotive companies like:
+So I rely on sound logic and principles of statistics, physics and math for designing and analysing stuff that matter.  
+In the past I have worked with companies like:
 * Suzuki
 * Jaguar Land Rover
 * Ford
