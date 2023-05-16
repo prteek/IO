@@ -32,7 +32,7 @@ def fetch_fitness_data(date_end="2021-04-01"):
 
 
 def run():
-    st.title('Strava suffer score prediction')
+    st.title('Fitness simulator')
     st.markdown("""
     Part of Strava metrics modelling project [repo](https://github.com/prteek/strava-project).
 """)
@@ -57,7 +57,7 @@ def run():
     ini = df_fitness['fitness_score'].values[-1]
     last_date = df_fitness['start_timestamp'].values[-1]
     days_since_last_workout = np.timedelta64(np.datetime64("now") - last_date, 'D').astype(int)
-    st.subheader("Fitness simulator")
+
     st.caption("Workout 1")
     col1, col2, col3, col4 = st.columns(4)
     days_from_today_1 = int(col1.text_input("Days from today", value=2, key=11))

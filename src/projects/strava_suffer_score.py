@@ -49,13 +49,13 @@ def fetch_recent_predictions(train_date):
 
 
 def run():
-    st.title('Strava suffer score prediction')
+    st.title('Suffer score prediction')
     st.markdown("""
     Part of Strava metrics modelling project [repo](https://github.com/prteek/strava-project).
 """)
 
-    # st.sidebar.caption("Strava pipeline")
-    # st.sidebar.image("https://raw.githubusercontent.com/prteek/strava-project/main/resources/strava.png")
+    # st.caption("Strava pipeline")
+    # st.image("https://raw.githubusercontent.com/prteek/strava-project/main/resources/strava.png")
     st.caption("""The dashboard monitors performance of model that the pipeline re-trains week (on AWS Sagemaker) and uses to make predictions for each workout.  
     This project started out as my curiosity to model my health data. After looking at fascinating stats from Strava app,
     I decided to model ```Suffer Score``` assigned to each workout by Strava. This being a paid feature could mean that if I
