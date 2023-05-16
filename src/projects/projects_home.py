@@ -23,7 +23,7 @@ def run():
     home = home_page()
     
     projects = {'Home':home,
-                'Strava project':sp,
+                'Strava':sp,
                 # 'Hastie pipeline monitoring': hm,
                 # 'London bedroom prediction':lbp,
                 # 'Determining number of samples for a study':snos,
