@@ -328,21 +328,45 @@ The new coordinate system from the PCA does not necessarily have physical proper
     )
     theta_cycles = np.array([(math.atan2(y_i, x_i)) for x_i, y_i in transformed_cycles])
 
-    fig = plt.figure()
-    plt.polar(theta, ci, ".", alpha=0.5, label="data")
-    plt.polar(theta_cycles, ci_cycles, "or", ms=10, alpha=0.8, label="cycles")
-    for i, cycle in enumerate(cycle_names):
-        plt.text(
-            theta_cycles[i] - 0.2,
-            ci_cycles[i],
-            cycle,
-            bbox={"facecolor": "black", "alpha": 0.2, "pad": 5},
-        )
+    fig = go.Figure()
 
-    plt.legend(loc="lower left")
-    ax = plt.gca()
-    ax.set_xticklabels(["Motorway", "", "Aggressive", "", "City", "", "Mild", ""])
-    st.pyplot(fig)
+    fig.add_trace(go.Scatterpolar(
+        r=ci,
+        theta=theta,
+        thetaunit = "radians",
+        mode='markers',
+        name='data',
+    ))
+
+    fig.add_trace(go.Scatterpolar(
+        r=ci_cycles,
+        theta=theta_cycles,
+        thetaunit = "radians",
+        mode='markers+text',
+        text=cycle_names,
+        textposition="top center",
+        textfont=dict(
+            size=12,
+            color="Black"
+        ),
+        marker=dict(size=10, color="red"),
+        name='cycles',
+    ))
+
+    # Update axis ticks labels to ["Motorway", "Aggressive", "City", "Mild"]
+    fig.update_layout(
+        polar=dict(
+            angularaxis=dict(
+                tickmode = 'array',
+                tickvals = np.array([0, np.pi/2, np.pi, 3*np.pi/2])*180/np.pi,
+                ticktext = ["Motorway", "Aggressive", "City", "Mild"],
+                rotation=0,
+                direction="counterclockwise",
+            ),
+        ),
+    )
+
+    st.plotly_chart(fig)
     
     st.markdown(""" ###
     ---
