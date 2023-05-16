@@ -38,7 +38,7 @@ def run():
 """)
 
     # Get fitness data
-    date_today = np.datetime64("today").astype(str)
+    date_today = np.datetime_as_string(np.datetime64("today") + np.timedelta64(1, 'D'))  # Add 1 day to today's date to include today's workout
     df_fitness = fetch_fitness_data(date_today)
     fitness_scores = df_fitness[["fitness_score_pre", "fitness_score"]].values.ravel()
     start_dates = df_fitness[["start_timestamp", "start_timestamp"]].values.ravel()
