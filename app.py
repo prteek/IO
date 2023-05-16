@@ -10,7 +10,7 @@ class home_page():
         return None
     
     def run(self):
-        st.title('IO')
+        st.title('Prateek')
         st.write("""Hi ! I am your just another friendly neighbourhood Data-Scientist.  
 Similar to your other friendly neighbourhood costumed crusaders, I believe that "with great power comes great responsibility".  
 So I rely on sound logic and principles of statistics, physics and math for designing and analysing stuff that matter.  
@@ -40,13 +40,15 @@ If you'd like to get in touch, please use the details below:
 
 
 home = home_page()
-    
+
 projects = {'Home':home,
             'Projects':ph,
             # 'Blog':bh,
            }
 
+projects_tab, about_tab = st.tabs(["Projects", "About"])
+with projects_tab:
+    projects["Projects"].run()
 
-page = st.sidebar.radio(label='Go to', options=list(projects.keys()))
-
-projects[page].run()
+with about_tab:
+    projects["Home"].run()

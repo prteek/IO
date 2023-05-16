@@ -37,8 +37,6 @@ def run():
     Part of Strava metrics modelling project [repo](https://github.com/prteek/strava-project).
 """)
 
-    st.sidebar.caption("Strava Fitness modelling")
-
     # Get fitness data
     date_today = np.datetime64("today").astype(str)
     df_fitness = fetch_fitness_data(date_today)

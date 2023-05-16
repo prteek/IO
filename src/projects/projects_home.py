@@ -6,8 +6,7 @@ from src.projects import drive_cycle_characterisation as dcc
 from src.projects import raspberry_pi_stats as rpis
 from src.projects import hastie_monitoring as hm
 from src.projects import london_bedroom_prediction as lbp
-from src.projects import strava_suffer_score as sss
-from src.projects import strava_fitness as sf
+from src.projects import strava_project as sp
 
 
 def run():
@@ -19,15 +18,12 @@ def run():
         def run(self):
             st.title('Projects home')
             st.markdown("### Welcome ! ")
-            st.write("""This is a collection of short fun (and not so fun) projects.
-            Each project is exercise in learning python and expanding
-            my understanding of Data analysis.""")
+            st.write("""This is a collection of short projects that I made as an effort in my Data Science journey.""")
 
     home = home_page()
     
     projects = {'Home':home,
-                'Strava suffer score prediction':sss,
-                'Strava fitness simulator':sf,
+                'Strava project':sp,
                 # 'Hastie pipeline monitoring': hm,
                 # 'London bedroom prediction':lbp,
                 # 'Determining number of samples for a study':snos,
@@ -37,6 +33,6 @@ def run():
 #                 'Raspberry Pi Stats dashboard':rpis,
                }
 
-    page = st.sidebar.selectbox(label='Projects', options=list(projects.keys()))
+    page = st.selectbox(label='Project list', options=list(projects.keys()))
 
     projects[page].run()
