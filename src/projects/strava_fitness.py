@@ -32,7 +32,7 @@ def fetch_fitness_data(date_end="2021-04-01"):
 
 
 def run():
-    st.title('Fitness simulator')
+    st.title('Fitness simulation')
     st.markdown("""
     Part of Strava metrics modelling project [repo](https://github.com/prteek/strava-project).
 """)
@@ -80,7 +80,7 @@ def run():
     fitness_score_2 = eval(predictor_fitness.predict(payload_fitness).decode())[0]
     col4.metric("Predicted suffer score", round(suffer_score_2, 0))
 
-    st.caption("Workout 2")
+    st.caption("Workout 3")
     col1, col2, col3, col4 = st.columns(4)
     days_from_today_3 = int(col1.text_input("Days from today", value=days_from_today_2+2, key=31))
     mov_time = col2.text_input("Moving time (minutes)", value=0, key=32)

@@ -4,7 +4,7 @@ from src.projects import strava_fitness as sf
 
 
 def run():
-    fitness_simulation_tab, suffer_score_model_tab = st.tabs(["Fitness simulation", "Suffer score model"])
+    fitness_simulation_tab, suffer_score_model_tab = st.tabs(["Fitness simulation", "Suffer score modelling"])
 
     with fitness_simulation_tab:
         sf.run()

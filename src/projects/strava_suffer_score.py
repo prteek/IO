@@ -49,7 +49,7 @@ def fetch_recent_predictions(train_date):
 
 
 def run():
-    st.title('Suffer score prediction')
+    st.title('Suffer score modelling')
     st.markdown("""
     Part of Strava metrics modelling project [repo](https://github.com/prteek/strava-project).
 """)
