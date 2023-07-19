@@ -24,6 +24,7 @@ matplotlib
 plotly
 streamlit
 altair
+holoviews
 
 ## ML
 scikit-learn
