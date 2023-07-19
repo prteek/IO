@@ -64,7 +64,7 @@ fig = (hv.Scatter(ds) * hv.Curve(agg)).opts(
     hv.opts.Scatter(size=5, tools=["hover"]),
 )
 
-display(overlay)
+display(fig)
 
 
 # %%
