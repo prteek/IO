@@ -17,6 +17,7 @@ pandas
 scipy
 dask[complete]
 lifelines
+duckdb
 
 ## Visualisation
 seaborn
