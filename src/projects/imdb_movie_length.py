@@ -41,7 +41,7 @@ as
 (
    select
      *
-     , row_number() over(partition by release_year order by world_sales) as yearly_sale_rank
+     , row_number() over(partition by release_year order by world_sales desc) as yearly_sale_rank
    from df
 )
 select *
