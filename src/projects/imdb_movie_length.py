@@ -70,13 +70,18 @@ display(fig)
 
 base_window = 1995, 1999
 test_year = 2018
-df_test = df_yearly_top_movies.query(
-    "(release_year >= @base_window[0] and release_year < @base_window[1]) or (release_year==@test_year)"
-).assign(
-    release_in_test_year=lambda x: x["release_year"] == test_year,
-    log_time=lambda x: np.log(x["running_time_mins"]),
-)
 
+query_test = f"""
+select *
+, case when release_year={test_year} then true
+else false
+end as release_in_test_year
+, log(running_time_mins) as log_time
+from df_yearly_top_movies
+where (release_year >= {base_window[0]} and release_year < {base_window[1]}) or (release_year={test_year})
+"""
+
+df_test = sql(query_test)
 
 ds = hv.Dataset(df_test, kdims=["release_in_test_year"])
 
@@ -99,8 +104,8 @@ display(fig)
 variable = "running_time_mins"
 alpha = 0.05
 
-g1 = df_test.query("release_in_test_year == False")[variable]
-g2 = df_test.query("release_in_test_year == True")[variable]
+g1 = sql(f"select {variable} from df_test where release_in_test_year = false")
+g2 = sql(f"select {variable} from df_test where release_in_test_year = true")
 
 
 def difference_of_mean(sample1, sample2):
@@ -112,7 +117,7 @@ res = stats.bootstrap(
     (g1, g2), statistic=difference_of_mean, alternative="less", random_state=42
 )
 
-fig = hv.Distribution(res.bootstrap_distribution) * hv.VLine(0).opts(
+fig = hv.Distribution(res.bootstrap_distribution[0]) * hv.VLine(0).opts(
     color="black",
     xlabel="Bootstrap difference of means",
     width=400,
