@@ -6,56 +6,55 @@ import matplotlib.pyplot as plt
 import holoviews as hv
 from scipy import stats
 from IPython.display import display
+import duckdb
 
 hv.extension("bokeh")
 sns.set_theme()
 
-# %%
-df = (
-    pd.read_csv("docs/Highest Holywood Grossing Movies.csv", index_col=0)
-    .assign(
-        _hr=lambda x: x["Movie Runtime"]
-        .str.extract(r"(\d+) hr", flags=0, expand=True)
-        .astype(float),
-        _min=lambda x: x["Movie Runtime"]
-        .str.extract(r"(\d+) min", flags=0, expand=True)
-        .astype(float),
-        running_time_mins=lambda x: x["_hr"] * 60 + x["_min"].fillna(0),
-        release_date=lambda x: pd.to_datetime(x["Release Date"]),
-        release_year=lambda x: x["release_date"].dt.year,
-    )
-    .astype(
-        {
-            "World Sales (in $)": float,
-            "International Sales (in $)": float,
-            "Domestic Sales (in $)": float,
-        }
-    )
-    .rename(
-        {
-            "World Sales (in $)": "world_sales",
-            "International Sales (in $)": "international_sales",
-            "Domestic Sales (in $)": "domestic_sales",
-        },
-        axis=1,
-    )
-)
+sql = lambda q: duckdb.sql(q).df()
 
+# %%
+
+query_read_and_format_data = """
+select
+Title as title
+, cast("World Sales (in $)" as double) as world_sales
+, cast("International Sales (in $)" as double) as international_sales
+, cast("Domestic Sales (in $)" as double) as domestic_sales
+, strptime(coalesce(nullif("Release Date", 'NA'), 'January 01, 1900'), '%B %d, %Y') as release_date
+, datepart('year', strptime(coalesce(nullif("Release Date", 'NA'), 'January 01, 1900'), '%B %d, %Y')) as release_year
+, cast(regexp_extract("Movie Runtime", '(\d+) hr?', 1) as int)*60+ cast(coalesce(nullif(regexp_extract("Movie Runtime", '(\d+) min?', 1),''),0) as int) as running_time_mins
+from 'docs/Highest Holywood Grossing Movies.csv'
+
+"""
+
+df = sql(query_read_and_format_data)
 
 assert df["running_time_mins"].isna().sum() == 0, "Error in running time parsing"
 
 # %%
 
 n = 10
-df_yearly_top_movies = (
-    df.groupby(["release_year"])
-    .apply(lambda x: x.nlargest(n, ["world_sales"]))
-    .reset_index(drop=True)
-    .query("release_year >= 1990")
+query_top_movies = f"""
+with ranked
+as
+(
+   select
+     *
+     , row_number() over(partition by release_year order by world_sales) as yearly_sale_rank
+   from df
 )
+select *
+from ranked
+where yearly_sale_rank <= {n} and release_year >= 1990
+order by release_year
+"""
+
+df_yearly_top_movies = sql(query_top_movies)
+
 
 kdims = ["release_year"]
-vdims = ["running_time_mins", "Title"]
+vdims = ["running_time_mins", "title"]
 ds = hv.Dataset(df_yearly_top_movies, kdims=kdims, vdims=vdims)
 
 agg = ds.aggregate("release_year", function=np.mean)
