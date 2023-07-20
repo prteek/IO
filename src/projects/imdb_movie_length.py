@@ -71,6 +71,7 @@ display(fig)
 base_window = 1995, 1999
 test_year = 2018
 
+# We shall try to create a tidy dataset for further exploration
 query_test = f"""
 select *
 , case when release_year={test_year} then true
