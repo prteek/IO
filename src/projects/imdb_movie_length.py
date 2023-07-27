@@ -11,6 +11,8 @@ import requests
 from bs4 import BeautifulSoup as BS
 import imdb
 import tqdm
+from joblib import Parallel, delayed
+
 
 hv.extension("bokeh")
 sns.set_theme()
@@ -41,7 +43,7 @@ def get_year_matched_movie_from_title(title: str, year: int):
             return movie
         else:
             continue
-    raise FileNotFoundError(f"{title}: not matched to a valid movie")
+    return None
 
 
 def get_info_from_movie(movie):
@@ -54,6 +56,19 @@ def get_info_from_movie(movie):
     return title_info
 
 
+def get_info_for_title(title, year):
+    movie = get_year_matched_movie_from_title(title, year)
+    if movie is not None:
+        title_info = get_info_from_movie(movie)
+    else:
+        title_info = dict()
+        title_info["release_year"] = year
+        title_info["runtime_mins"] = np.nan
+
+    title_info["title"] = title
+    return title_info
+
+
 top_n = 10
 all_titles = []
 pbar = tqdm.tqdm(years, position=0)
@@ -62,12 +77,14 @@ for year in pbar:
     page = requests.get(yearly_top_grossing_url.format(year=year))
     soup = BS(page.content, "html.parser")
     titles = soup.find_all("td", class_="a-text-left mojo-field-type-release_group")
+    delayed_year_results = []
     for t in titles[:top_n]:
         title = t.select("a")[0].string
-        movie = get_year_matched_movie_from_title(title, year)
-        title_info = get_info_from_movie(movie)
-        title_info["title"] = title
-        all_titles.append(title_info)
+        title_info = delayed(get_info_for_title)(title, year)
+        delayed_year_results.append(title_info)
+
+    year_results = Parallel(n_jobs=top_n, prefer="threads")(delayed_year_results)
+    all_titles.extend(year_results)
 
 df_movies = pd.DataFrame(all_titles)
 df_movies.to_csv("movies_dataset.csv")
