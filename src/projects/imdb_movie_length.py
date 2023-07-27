@@ -7,6 +7,10 @@ import holoviews as hv
 from scipy import stats
 from IPython.display import display
 import duckdb
+import requests
+from bs4 import BeautifulSoup as BS
+import imdb
+import tqdm
 
 hv.extension("bokeh")
 sns.set_theme()
@@ -14,47 +18,56 @@ sns.set_theme()
 sql = lambda q: duckdb.sql(q).df()
 
 # %%
+# Scraping data
 
+ia = imdb.Cinemagoer()
+
+years = range(1990, 2023)
+yearly_top_grossing_url = "https://www.boxofficemojo.com/year/world/{year}/"
+
+
+page = requests.get(yearly_top_grossing_url.format(year=2023))
+soup = BS(page.content, "html.parser")
+titles = soup.find_all("td", class_="a-text-left mojo-field-type-release_group")
+print(titles[0].select("a")[0].string)
+
+# %%
+top_n = 10
+all_titles = []
+pbar = tqdm.tqdm(years, position=0)
+for year in pbar:
+    pbar.set_description(str(year))
+    page = requests.get(yearly_top_grossing_url.format(year=year))
+    soup = BS(page.content, "html.parser")
+    titles = soup.find_all("td", class_="a-text-left mojo-field-type-release_group")
+    for t in tqdm.tqdm(titles[:top_n], desc="titles", position=1, leave=False):
+        i_title = t.select("a")[0].string
+        movie = ia.search_movie(i_title)[0]
+        run_time = ia.get_movie_main(movie.getID())["data"]["runtimes"][0]
+        title_info = {
+            "title": i_title,
+            "release_year": year,
+            "runtime_mins": int(run_time),
+        }
+        all_titles.append(title_info)
+
+df_movies = pd.DataFrame(all_titles)
+df_movies.to_csv("movies_dataset.csv")
+
+# %%
 query_read_and_format_data = """
-select
-Title as title
-, cast("World Sales (in $)" as double) as world_sales
-, cast("International Sales (in $)" as double) as international_sales
-, cast("Domestic Sales (in $)" as double) as domestic_sales
-, strptime(coalesce(nullif("Release Date", 'NA'), 'January 01, 1900'), '%B %d, %Y') as release_date
-, datepart('year', strptime(coalesce(nullif("Release Date", 'NA'), 'January 01, 1900'), '%B %d, %Y')) as release_year
-, cast(regexp_extract("Movie Runtime", '(\d+) hr?', 1) as int)*60+ cast(coalesce(nullif(regexp_extract("Movie Runtime", '(\d+) min?', 1),''),0) as int) as running_time_mins
-from 'docs/Highest Holywood Grossing Movies.csv'
-
+select *
+from 'movies_dataset.csv'
 """
 
-df = sql(query_read_and_format_data)
+df_yearly_top_movies = sql(query_read_and_format_data)
 
-assert df["running_time_mins"].isna().sum() == 0, "Error in running time parsing"
+assert df["runtime_mins"].isna().sum() == 0, "Error in running time parsing"
 
 # %%
 
-n = 10
-query_top_movies = f"""
-with ranked
-as
-(
-   select
-     *
-     , row_number() over(partition by release_year order by world_sales desc) as yearly_sale_rank
-   from df
-)
-select *
-from ranked
-where yearly_sale_rank <= {n} and release_year >= 1990
-order by release_year
-"""
-
-df_yearly_top_movies = sql(query_top_movies)
-
-
 kdims = ["release_year"]
-vdims = ["running_time_mins", "title"]
+vdims = ["runtime_mins", "title"]
 ds = hv.Dataset(df_yearly_top_movies, kdims=kdims, vdims=vdims)
 
 agg = ds.aggregate("release_year", function=np.mean)
@@ -77,7 +90,7 @@ select *
 , case when release_year={test_year} then true
 else false
 end as release_in_test_year
-, log(running_time_mins) as log_time
+, log(runtime_mins) as log_time
 from df_yearly_top_movies
 where (release_year >= {base_window[0]} and release_year < {base_window[1]}) or (release_year={test_year})
 """
@@ -87,7 +100,7 @@ df_test = sql(query_test)
 ds = hv.Dataset(df_test, kdims=["release_in_test_year"])
 
 fig = (
-    ds.to(hv.Distribution, "running_time_mins")
+    ds.to(hv.Distribution, "runtime_mins")
     .overlay("release_in_test_year")
     .opts(width=400, height=400, show_grid=True)
 )
@@ -102,7 +115,7 @@ fig = (
 
 display(fig)
 
-variable = "running_time_mins"
+variable = "runtime_mins"
 alpha = 0.05
 
 g1 = sql(f"select {variable} from df_test where release_in_test_year = false")
@@ -134,3 +147,6 @@ print(
     "\n"
     f"Null hypothesis rejected: {(1 - np.mean(res.bootstrap_distribution < 0)) <= alpha}",
 )
+
+
+# %%
