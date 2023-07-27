@@ -64,12 +64,7 @@ for year in pbar:
     titles = soup.find_all("td", class_="a-text-left mojo-field-type-release_group")
     for t in titles[:top_n]:
         title = t.select("a")[0].string
-        try:
-            movie = get_year_matched_movie_from_title(title, year)
-        except FileNotFoundError as e:
-            print(e)
-            continue
-
+        movie = get_year_matched_movie_from_title(title, year)
         title_info = get_info_from_movie(movie)
         title_info["title"] = title
         all_titles.append(title_info)
