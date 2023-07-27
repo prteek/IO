@@ -22,7 +22,7 @@ sql = lambda q: duckdb.sql(q).df()
 
 ia = imdb.Cinemagoer()
 
-years = range(1990, 2023)
+years = range(1990, 2024)
 yearly_top_grossing_url = "https://www.boxofficemojo.com/year/world/{year}/"
 
 
@@ -34,13 +34,14 @@ print(titles[0].select("a")[0].string)
 # %%
 
 
-def get_year_matched_movie_from_title(title: str):
+def get_year_matched_movie_from_title(title: str, year: int):
     movies = ia.search_movie(title)
     for movie in movies:
         if ia.get_movie_main(movie.getID())["data"]["year"] == year:
             return movie
         else:
-            raise FileNotFoundError(f"{title}: not matched to a valid movie")
+            continue
+    raise FileNotFoundError(f"{title}: not matched to a valid movie")
 
 
 def get_info_from_movie(movie):
@@ -64,7 +65,7 @@ for year in pbar:
     for t in titles[:top_n]:
         title = t.select("a")[0].string
         try:
-            movie = get_year_matched_movie_from_title(title)
+            movie = get_year_matched_movie_from_title(title, year)
         except FileNotFoundError as e:
             print(e)
             continue
@@ -104,7 +105,7 @@ display(fig)
 # %%
 
 base_window = 1995, 1999
-test_year = 2018
+test_year = 2022
 
 # We shall try to create a tidy dataset for further exploration
 query_test = f"""
