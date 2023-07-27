@@ -69,8 +69,12 @@ top_n = 10
 all_titles = []
 pbar = tqdm.tqdm(years, position=0)
 problematic_movie_titles = [
-    "300"
-]  # 300 was probably released in 2006 but appears on charts in 2007 and isn't matched correctly
+    "300",
+    "Fast & Furious 6",
+]
+# 300 was probably released in 2006 but appears on charts in 2007 and isn't matched correctly
+# Fast & Furious 6 has incorrect runtime duration (19 min)
+
 for year in pbar:
     pbar.set_description(str(year))
     page = requests.get(yearly_top_grossing_url.format(year=year))
@@ -88,12 +92,12 @@ for year in pbar:
     all_titles.extend(year_results)
 
 df_movies = pd.DataFrame(all_titles)
-df_movies.to_csv("movies_dataset.csv", index=False)
+df_movies.to_csv("./docs/movies_dataset.csv", index=False)
 
 # %%
 query_read_and_format_data = """
 select *
-from read_csv_auto('movies_dataset.csv') where runtime_mins is not null
+from read_csv_auto('./docs/movies_dataset.csv') where runtime_mins is not null
 """
 
 df_yearly_top_movies = sql(query_read_and_format_data)
@@ -104,13 +108,43 @@ assert (
 
 # %%
 
-kdims = ["release_year"]
-vdims = ["runtime_mins", "title"]
+kdims = [("release_year", "Release year")]
+vdims = [("runtime_mins", "Runtime (mins)"), ("title", "Title")]
 ds = hv.Dataset(df_yearly_top_movies, kdims=kdims, vdims=vdims)
 
+annotate = [
+    (2022, 192, "Avatar: The Way of Water"),
+    (2019, 181, "Avengers: Endgame"),
+    (2003, 201, "LOTR: The Return of the King"),
+    (1993, 195, "Schindler's List"),
+    (2014, 169, "Interstellar"),
+]
+annotations = hv.Overlay(
+    [
+        hv.Text(i[0] - 2, i[1] + 5, i[2], group="annotation_text").opts(
+            text_font_size="12px"
+        )
+        for i in annotate
+    ]
+) * hv.Overlay(
+    [
+        hv.Scatter((i[0], i[1]), group="annotation_point").opts(
+            line_color="red", fill_alpha=0
+        )
+        for i in annotate
+    ]
+)
+
 agg = ds.aggregate("release_year", function=np.mean)
-fig = (hv.Scatter(ds) * hv.Curve(agg)).opts(
-    hv.opts.Curve(width=400, height=400, show_grid=True, color="k"),
+fig = (hv.Scatter(ds, group="data") * hv.Curve(agg, group="data") * annotations).opts(
+    hv.opts.Curve(
+        width=600,
+        height=600,
+        show_grid=True,
+        color="k",
+        title="Top grossing movies per year",
+        xlim=(1988, 2025),
+    ),
     hv.opts.Scatter(size=5, tools=["hover"]),
 )
 
@@ -119,36 +153,31 @@ display(fig)
 
 # %%
 
-base_window = 1995, 1999
+base_window = 1990, 2001
 test_year = 2022
 
 # We shall try to create a tidy dataset for further exploration
 query_test = f"""
-select *
-, case when release_year={test_year} then true
-else false
-end as release_in_test_year
-, log(runtime_mins) as log_time
+select runtime_mins
+, case when release_year={test_year} then '{test_year}'
+else '{base_window[0]}-{base_window[1]-1}'
+end as release_year
 from df_yearly_top_movies
 where (release_year >= {base_window[0]} and release_year < {base_window[1]}) or (release_year={test_year})
 """
 
 df_test = sql(query_test)
 
-ds = hv.Dataset(df_test, kdims=["release_in_test_year"])
+ds = hv.Dataset(
+    df_test,
+    kdims=[("release_year", "Release year")],
+    vdims=[("runtime_mins", "Runtime (mins)")],
+)
 
 fig = (
     ds.to(hv.Distribution, "runtime_mins")
-    .overlay("release_in_test_year")
-    .opts(width=400, height=400, show_grid=True)
-)
-
-display(fig)
-
-fig = (
-    ds.to(hv.Distribution, "log_time")
-    .overlay("release_in_test_year")
-    .opts(width=400, height=400, show_grid=True)
+    .overlay("release_year")
+    .opts(width=600, height=600, show_grid=True)
 )
 
 display(fig)
@@ -156,8 +185,8 @@ display(fig)
 variable = "runtime_mins"
 alpha = 0.05
 
-g1 = sql(f"select {variable} from df_test where release_in_test_year = false")
-g2 = sql(f"select {variable} from df_test where release_in_test_year = true")
+g1 = sql(f"select {variable} from df_test where release_year != '{test_year}'")
+g2 = sql(f"select {variable} from df_test where release_year = '{test_year}'")
 
 
 def difference_of_mean(sample1, sample2):
@@ -169,15 +198,6 @@ res = stats.bootstrap(
     (g1, g2), statistic=difference_of_mean, alternative="less", random_state=42
 )
 
-fig = hv.Distribution(res.bootstrap_distribution[0]) * hv.VLine(0).opts(
-    color="black",
-    xlabel="Bootstrap difference of means",
-    width=400,
-    height=400,
-    show_grid=True,
-)
-display(fig)
-
 print(
     f"mean(difference of means) : {np.mean(res.bootstrap_distribution)}",
     "\n",
@@ -185,6 +205,33 @@ print(
     "\n"
     f"Null hypothesis rejected: {(1 - np.mean(res.bootstrap_distribution < 0)) <= alpha}",
 )
+
+
+fig = (
+    hv.Distribution(res.bootstrap_distribution[0])
+    * hv.VLine(0).opts(
+        color="black",
+        xlabel="Bootstrap difference of means",
+        width=600,
+        height=600,
+        show_grid=True,
+    )
+    * hv.Text(
+        -15,
+        0.02,
+        f"proportion of \n samples < 0: {round(np.mean(res.bootstrap_distribution < 0),2)}",
+    ).opts(text_font_size="12px")
+    * hv.Text(
+        -30,
+        0.04,
+        f"Null hypothesis rejected: {(1 - np.mean(res.bootstrap_distribution < 0)) <= alpha}",
+    ).opts(text_font_size="12px")
+    * hv.Text(-20, 0.001, f"mean: {round(np.mean(res.bootstrap_distribution),2)}").opts(
+        text_font_size="12px"
+    )
+)
+
+display(fig.opts(title="Testing difference between means of Runtimes"))
 
 
 # %%
