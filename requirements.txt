@@ -1,15 +1,9 @@
 ## Working environment
 pip
-jupyterlab
-nbdime
-pixiedust
 joblib
-pydotplus
 python-dotenv
-dill
 black
-pyflakes
-pytest
+tqdm
 
 ## core scientific
 numpy
@@ -24,7 +18,6 @@ seaborn
 matplotlib
 plotly
 streamlit
-altair
 holoviews
 
 ## ML
@@ -37,6 +30,8 @@ geopy
 ## vision
 opencv-python
 
+## IMDB
+cinemagoer
 
 ## AWS
 boto3
