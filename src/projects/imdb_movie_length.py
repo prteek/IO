@@ -24,19 +24,9 @@ sql = lambda q: duckdb.sql(q).df()
 
 ia = imdb.Cinemagoer()
 
-years = range(1990, 2024)
-yearly_top_grossing_url = "https://www.boxofficemojo.com/year/world/{year}/"
-
-
-page = requests.get(yearly_top_grossing_url.format(year=2023))
-soup = BS(page.content, "html.parser")
-titles = soup.find_all("td", class_="a-text-left mojo-field-type-release_group")
-print(titles[0].select("a")[0].string)
-
-# %%
-
 
 def get_year_matched_movie_from_title(title: str, year: int):
+    """Since top titles are fetched from boxoffice mojo and movie details are fetched from imdb, the titles need to be matched to suitable year in imdb database (due to movies with same name)"""
     movies = ia.search_movie(title)
     for movie in movies:
         if ia.get_movie_main(movie.getID())["data"]["year"] == year:
@@ -47,6 +37,7 @@ def get_year_matched_movie_from_title(title: str, year: int):
 
 
 def get_info_from_movie(movie):
+    """This function can be modified to include desired info from movie object collected as a dictionary"""
     run_time = ia.get_movie_main(movie.getID())["data"]["runtimes"][0]
     year = ia.get_movie_main(movie.getID())["data"]["year"]
     title_info = {
@@ -57,17 +48,22 @@ def get_info_from_movie(movie):
 
 
 def get_info_for_title(title, year):
+    """This function exists solely to package functionality together and enbale use of Parellelism"""
     movie = get_year_matched_movie_from_title(title, year)
     if movie is not None:
         title_info = get_info_from_movie(movie)
     else:
         title_info = dict()
         title_info["release_year"] = year
-        title_info["runtime_mins"] = np.nan
+        # Comment statement below since column will be autofilled
+        # title_info["runtime_mins"] = np.nan
 
     title_info["title"] = title
     return title_info
 
+
+years = range(1990, 2024)
+yearly_top_grossing_url = "https://www.boxofficemojo.com/year/world/{year}/"
 
 top_n = 10
 all_titles = []
@@ -92,17 +88,19 @@ for year in pbar:
     all_titles.extend(year_results)
 
 df_movies = pd.DataFrame(all_titles)
-df_movies.to_csv("movies_dataset.csv")
+df_movies.to_csv("movies_dataset.csv", index=False)
 
 # %%
 query_read_and_format_data = """
 select *
-from 'movies_dataset.csv'
+from read_csv_auto('movies_dataset.csv') where runtime_mins is not null
 """
 
 df_yearly_top_movies = sql(query_read_and_format_data)
 
-assert df["runtime_mins"].isna().sum() == 0, "Error in running time parsing"
+assert (
+    df_yearly_top_movies["runtime_mins"].isna().sum() == 0
+), "Error in running time parsing"
 
 # %%
 
