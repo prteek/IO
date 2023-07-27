@@ -72,6 +72,9 @@ def get_info_for_title(title, year):
 top_n = 10
 all_titles = []
 pbar = tqdm.tqdm(years, position=0)
+problematic_movie_titles = [
+    "300"
+]  # 300 was probably released in 2006 but appears on charts in 2007 and isn't matched correctly
 for year in pbar:
     pbar.set_description(str(year))
     page = requests.get(yearly_top_grossing_url.format(year=year))
@@ -80,6 +83,8 @@ for year in pbar:
     delayed_year_results = []
     for t in titles[:top_n]:
         title = t.select("a")[0].string
+        if title in problematic_movie_titles:
+            continue
         title_info = delayed(get_info_for_title)(title, year)
         delayed_year_results.append(title_info)
 
