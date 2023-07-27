@@ -32,6 +32,27 @@ titles = soup.find_all("td", class_="a-text-left mojo-field-type-release_group")
 print(titles[0].select("a")[0].string)
 
 # %%
+
+
+def get_year_matched_movie_from_title(title: str):
+    movies = ia.search_movie(title)
+    for movie in movies:
+        if ia.get_movie_main(movie.getID())["data"]["year"] == year:
+            return movie
+        else:
+            raise FileNotFoundError(f"{title}: not matched to a valid movie")
+
+
+def get_info_from_movie(movie):
+    run_time = ia.get_movie_main(movie.getID())["data"]["runtimes"][0]
+    year = ia.get_movie_main(movie.getID())["data"]["year"]
+    title_info = {
+        "release_year": year,
+        "runtime_mins": int(run_time),
+    }
+    return title_info
+
+
 top_n = 10
 all_titles = []
 pbar = tqdm.tqdm(years, position=0)
@@ -40,21 +61,16 @@ for year in pbar:
     page = requests.get(yearly_top_grossing_url.format(year=year))
     soup = BS(page.content, "html.parser")
     titles = soup.find_all("td", class_="a-text-left mojo-field-type-release_group")
-    for t in tqdm.tqdm(titles[:top_n], desc="titles", position=1, leave=False):
-        i_title = t.select("a")[0].string
-        movies = ia.search_movie(i_title)
-        for movie in movies:
-            if ia.get_movie_main(movie.getID())["data"]["year"] == year:
-                break
-            else:
-                continue
+    for t in titles[:top_n]:
+        title = t.select("a")[0].string
+        try:
+            movie = get_year_matched_movie_from_title(title)
+        except FileNotFoundError as e:
+            print(e)
+            continue
 
-        run_time = ia.get_movie_main(movie.getID())["data"]["runtimes"][0]
-        title_info = {
-            "title": i_title,
-            "release_year": year,
-            "runtime_mins": int(run_time),
-        }
+        title_info = get_info_from_movie(movie)
+        title_info["title"] = title
         all_titles.append(title_info)
 
 df_movies = pd.DataFrame(all_titles)
