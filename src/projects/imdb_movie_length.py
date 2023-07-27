@@ -42,7 +42,13 @@ for year in pbar:
     titles = soup.find_all("td", class_="a-text-left mojo-field-type-release_group")
     for t in tqdm.tqdm(titles[:top_n], desc="titles", position=1, leave=False):
         i_title = t.select("a")[0].string
-        movie = ia.search_movie(i_title)[0]
+        movies = ia.search_movie(i_title)
+        for movie in movies:
+            if ia.get_movie_main(movie.getID())["data"]["year"] == year:
+                break
+            else:
+                continue
+
         run_time = ia.get_movie_main(movie.getID())["data"]["runtimes"][0]
         title_info = {
             "title": i_title,
